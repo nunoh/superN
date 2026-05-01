@@ -33,12 +33,3 @@ Default keybindings (Mac):
 | Reload extension (dev)  | `Ctrl+Shift+R`      |
 
 Rebind via `about:addons` → ⚙ → *Manage Extension Shortcuts*.
-
-## Inbox
-
-| Ext       | Does                              | Difficulty                                | Link                                                                  | Perms             |
-| --------- | --------------------------------- | ----------------------------------------- | --------------------------------------------------------------------- | ----------------- |
-| Transpose | Audio pitch shift on HTML5 media  | 🟡 Medium — Web Audio pitch-shift node    | [link](https://addons.mozilla.org/en-US/firefox/addon/transpose/)     | Tabs, all sites   |
-
-### Out of scope?
-- Tampermonkey 🟠 — can be removed after
