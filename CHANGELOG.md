@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-05-01 (v0.5)
+
+### ✨ Features
+- Reclaim browser keyboard shortcuts on sites that hijack them — blocks `Cmd/Ctrl/Alt+*` and unmodified `1`–`9` from reaching the page in the capture phase, so the browser handles them normally. First site: `rtve.es` (replaces a standalone Tampermonkey script). Add more sites by extending the `matches` list in `manifest.json`
+
 ## 2026-05-01 (v0.4)
 
 ### ✨ Features

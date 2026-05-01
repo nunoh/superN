@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "superN",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Tiny browser tools. Currently: a daily time-block for distracting sites.",
   "browser_specific_settings": {
     "gecko": {
@@ -51,6 +51,12 @@
       "js": ["content/video-speed.js"],
       "css": ["content/video-speed.css"],
       "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": ["*://*.rtve.es/*"],
+      "js": ["content/keyboard-reclaim.js"],
+      "run_at": "document_start",
       "all_frames": true
     }
   ],
