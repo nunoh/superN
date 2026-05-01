@@ -1,0 +1,112 @@
+{
+  "manifest_version": 3,
+  "name": "superN",
+  "version": "0.4.0",
+  "description": "Tiny browser tools. Currently: a daily time-block for distracting sites.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "supern@nh.local",
+      "strict_min_version": "121.0"
+    }
+  },
+  "permissions": ["storage", "menus", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg",
+    "128": "icons/icon.svg"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon.svg",
+      "32": "icons/icon.svg",
+      "48": "icons/icon.svg"
+    },
+    "default_title": "superN — settings"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/timer.js"],
+      "css": ["content/timer.css"],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://www.google.com/search*",
+        "*://www.google.es/search*",
+        "*://www.google.pt/search*"
+      ],
+      "js": ["content/google-search.js"],
+      "css": ["content/google-search.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/video-speed.js"],
+      "css": ["content/video-speed.css"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "open-options": {
+      "suggested_key": {
+        "default": "Alt+Shift+N",
+        "mac": "MacCtrl+Shift+N"
+      },
+      "description": "Open superN settings"
+    },
+    "pin-toggle": {
+      "suggested_key": {
+        "default": "Alt+Shift+P",
+        "mac": "MacCtrl+Shift+P"
+      },
+      "description": "Pin or unpin the current tab"
+    },
+    "tab-left": {
+      "suggested_key": {
+        "default": "Alt+Shift+Left",
+        "mac": "MacCtrl+Shift+Left"
+      },
+      "description": "Move current tab left"
+    },
+    "tab-right": {
+      "suggested_key": {
+        "default": "Alt+Shift+Right",
+        "mac": "MacCtrl+Shift+Right"
+      },
+      "description": "Move current tab right"
+    },
+    "recent-1": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+1",
+        "mac": "Command+Shift+1"
+      },
+      "description": "Jump to most recent tab"
+    },
+    "recent-2": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+2",
+        "mac": "Command+Shift+2"
+      },
+      "description": "Jump to second most recent tab"
+    },
+    "dev-reload": {
+      "suggested_key": {
+        "default": "Alt+Shift+R",
+        "mac": "MacCtrl+Shift+R"
+      },
+      "description": "Reload superN (dev)"
+    }
+  }
+}

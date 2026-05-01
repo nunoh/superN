@@ -1,0 +1,18 @@
+#__supern_timer__ {
+  position: fixed !important;
+  top: 8px !important;
+  left: 8px !important;
+  z-index: 2147483647 !important;
+  background: rgba(0, 0, 0, 0.72) !important;
+  color: #fff !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.02em !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}

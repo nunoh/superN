@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>superN — settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <h1>
+        <img src="../icons/icon.svg" alt="" class="brand-icon" />
+        superN
+      </h1>
+
+      <section>
+        <h2>
+          <svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <polyline points="12 7 12 12 15 14" />
+          </svg>
+          Time block
+        </h2>
+        <p class="hint">
+          per-site limits. set a daily minute budget, a window when the site is
+          blocked, or both. hard mode blocks outright; soft shows a reminder
+          with an override button. resets at local midnight.
+        </p>
+
+        <table id="blocklist">
+          <thead>
+            <tr>
+              <th>domain</th>
+              <th>min/day</th>
+              <th>block window</th>
+              <th>mode</th>
+              <th>used</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <form id="add-form">
+          <input
+            id="add-domain"
+            type="text"
+            placeholder="example.com"
+            autocomplete="off"
+            spellcheck="false"
+            required
+          />
+          <input
+            id="add-minutes"
+            type="number"
+            min="1"
+            max="1440"
+            placeholder="min/day"
+          />
+          <input id="add-start" type="time" aria-label="block window start" />
+          <input id="add-end" type="time" aria-label="block window end" />
+          <select id="add-mode" aria-label="enforcement mode">
+            <option value="hard">hard</option>
+            <option value="soft">soft</option>
+          </select>
+          <button type="submit">add</button>
+        </form>
+        <p class="hint small">
+          window blocks the site during the given range (wraps midnight if end
+          is before start). leave both blank to skip.
+        </p>
+      </section>
+
+      <section>
+        <h2>
+          <svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+          Snoozed tabs
+        </h2>
+        <p class="hint">
+          tabs scheduled to reopen later. right-click any tab → snooze tab.
+        </p>
+        <ul id="snoozed-list" class="snoozed-list"></ul>
+      </section>
+
+      <section>
+        <h2>
+          <svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <polygon points="13 5 22 12 13 19 13 5" />
+            <polygon points="3 5 12 12 3 19 3 5" />
+          </svg>
+          Video speed
+        </h2>
+        <p class="hint">
+          keyboard control for HTML5 video on any site. shortcuts apply when
+          a video is on the page and you're not typing in a field.
+        </p>
+        <form id="video-speed-form" class="video-speed-form">
+          <label for="preferred-speed">preferred speed</label>
+          <input
+            id="preferred-speed"
+            type="number"
+            min="0.1"
+            max="16"
+            step="0.1"
+          />
+        </form>
+        <dl class="shortcut-list">
+          <dt>slower / faster</dt>
+          <dd><kbd>S</kbd> / <kbd>D</kbd></dd>
+          <dt>reset to 1×</dt>
+          <dd><kbd>R</kbd></dd>
+          <dt>back / forward 10s</dt>
+          <dd><kbd>Z</kbd> / <kbd>X</kbd></dd>
+          <dt>toggle preferred speed</dt>
+          <dd><kbd>G</kbd></dd>
+          <dt>show / hide overlay</dt>
+          <dd><kbd>V</kbd></dd>
+        </dl>
+      </section>
+
+      <section class="shortcuts">
+        <h2>
+          <svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M7 14h10" />
+          </svg>
+          Shortcuts
+        </h2>
+        <dl class="shortcut-list">
+          <dt>open settings</dt>
+          <dd><kbd id="open-shortcut">…</kbd></dd>
+          <dt>pin / unpin tab</dt>
+          <dd><kbd id="pin-shortcut">…</kbd></dd>
+          <dt>move tab left</dt>
+          <dd><kbd id="tab-left-shortcut">…</kbd></dd>
+          <dt>move tab right</dt>
+          <dd><kbd id="tab-right-shortcut">…</kbd></dd>
+          <dt>most recent tab</dt>
+          <dd><kbd id="recent-1-shortcut">…</kbd></dd>
+          <dt>second most recent tab</dt>
+          <dd><kbd id="recent-2-shortcut">…</kbd></dd>
+          <dt>reload extension <span class="tag">dev</span></dt>
+          <dd><kbd id="reload-shortcut">…</kbd></dd>
+        </dl>
+        <p class="hint small">
+          rebind at <code>about:addons</code> → ⚙ → manage extension shortcuts.
+        </p>
+      </section>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>
