@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SuperN — icon iterations</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --line: #2a2a2a;
+    --fg: #fafaf9;
+    --mute: #888;
+    --accent: #f97316;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 14px/1.45 ui-sans-serif, -apple-system, system-ui, sans-serif; }
+  header {
+    padding: 32px 40px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+  header p  { margin: 0; color: var(--mute); }
+  main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    padding: 24px 40px 16px;
+    max-width: 1200px;
+  }
+  .section-head {
+    grid-column: 1 / -1;
+    padding: 24px 0 0;
+    border-top: 1px solid var(--line);
+    margin-top: 16px;
+  }
+  .section-head:first-child { border-top: none; padding-top: 8px; margin-top: 0; }
+  .section-head h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+  .section-head p  { margin: 0; color: var(--mute); font-size: 12.5px; max-width: 70ch; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 22px 22px;
+  }
+  .card h2 { margin: 0 0 4px; font-size: 14px; font-weight: 600; letter-spacing: .01em; }
+  .card .desc { margin: 0 0 18px; color: var(--mute); font-size: 12.5px; }
+  .row {
+    display: flex;
+    align-items: flex-end;
+    gap: 22px;
+    padding: 18px 8px;
+    background: #050505;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+  }
+  .row + .row { margin-top: 10px; }
+  .slot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .slot small { color: var(--mute); font-size: 11px; }
+  .light { background: #ededec; }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SuperN — icon iterations</h1>
+  <p>Four directions, each rendered at 128 / 48 / 32 / 16 px. Top row dark, bottom row light, so we see how each holds up on either toolbar background.</p>
+</header>
+
+<main>
+
+  <div class="section-head">
+    <h2>Round 1 — first sketches</h2>
+    <p>Four directions exploring how to put an N into the mark while keeping the dark + orange palette.</p>
+  </div>
+
+  <!-- =================== CONCEPT 1: Bold geometric N =================== -->
+  <section class="card">
+    <h2>1 · Bold N — orange diagonal</h2>
+    <p class="desc">Stencil-style N. The diagonal is the brand-orange stroke; the verticals stay white. Reads as "N" instantly even at 16px.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c1"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c1"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c1"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c1"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c1"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c1"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c1"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 2: Exponent Nⁿ =================== -->
+  <section class="card">
+    <h2>2 · N<sup>n</sup> — exponent / "super-script"</h2>
+    <p class="desc">A literal pun on <em>super</em>: capital N with a raised lowercase n. Math-y, quietly clever, still clean as a square mark.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c2"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c2"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c2"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c2"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c2"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c2"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c2"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 3: Pixel-grid N =================== -->
+  <section class="card">
+    <h2>3 · Grid N — descendant of the current mark</h2>
+    <p class="desc">Keeps the tiled-square language of the current icon, but the tiles now spell N. Orange marks the diagonal — the same accent role as today.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c3"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c3"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c3"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c3"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c3"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c3"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c3"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 4: Negative-space N =================== -->
+  <section class="card">
+    <h2>4 · Negative-space N — orange tile</h2>
+    <p class="desc">N cut out of a solid orange square. Most graphic of the four, strongest at small sizes; loud at big sizes — works if the brand wants to be louder.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c4"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c4"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c4"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c4"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c4"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c4"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c4"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>Round 2 — original 4-tile mark + N, and superhero references</h2>
+    <p>Two evolutions that keep the existing 4-tile icon and place an N inside the orange tile, then four directions playing on <em>super</em> as in superhero — chest emblem, comic burst, cape, lightning bolt.</p>
+  </div>
+
+  <!-- =================== CONCEPT 5: 4-tile, dark N on orange =================== -->
+  <section class="card">
+    <h2>5 · Original 4-tile · dark N on the orange</h2>
+    <p class="desc">Smallest possible change to today's mark: just stamp an N onto the orange tile in the same near-black as the background. Reads as continuity, not a redesign.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c5"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c5"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c5"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c5"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c5"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c5"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c5"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 6: 4-tile, white N on orange =================== -->
+  <section class="card">
+    <h2>6 · Original 4-tile · white N on the orange</h2>
+    <p class="desc">Same as #5 but the N is white — matches the other three tiles, reads as "the N tile is the special one." More unified, slightly less punchy.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c6"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c6"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c6"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c6"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c6"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c6"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c6"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 7: Chest-emblem shield =================== -->
+  <section class="card">
+    <h2>7 · Chest emblem — shield with N</h2>
+    <p class="desc">Pentagonal Superman-style chest shield in orange, dark N inside. Most overtly superhero of the set.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c7"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c7"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c7"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c7"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c7"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c7"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c7"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 8: Comic starburst =================== -->
+  <section class="card">
+    <h2>8 · Comic burst — POW! sticker</h2>
+    <p class="desc">Spiky orange starburst, white N at center. Comic-book sticker energy — playful, more "fun-tool" than "serious-utility".</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c8"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c8"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c8"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c8"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c8"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c8"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c8"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 9: Cape N =================== -->
+  <section class="card">
+    <h2>9 · Caped N</h2>
+    <p class="desc">White N with an orange cape billowing behind. The hero pose. Most narrative, but loses crispness at 16px.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c9"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c9"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c9"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c9"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c9"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c9"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c9"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 10: Lightning N =================== -->
+  <section class="card">
+    <h2>10 · Lightning-bolt N</h2>
+    <p class="desc">N where the diagonal is replaced by a Z-kink lightning bolt. Reads as N <em>and</em> bolt — speed/power without a literal cape.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c10"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c10"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c10"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c10"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c10"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c10"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c10"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>Round 3 — concept 7 in monochrome</h2>
+    <p>Same shield silhouette, four ways to render it without orange. One size each.</p>
+  </div>
+
+  <section class="card">
+    <h2>7a · Solid white shield · dark N</h2>
+    <p class="desc">Inverted from the orange version. Strongest contrast, badge feel.</p>
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c7a"/></svg><small>128</small></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>7b · Outline shield · white N</h2>
+    <p class="desc">Stroke only, no fill. Lighter, more iconographic — sketchy stencil energy.</p>
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c7b"/></svg><small>128</small></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>7c · White shield · N as cutout</h2>
+    <p class="desc">N is negative space — the dark background showing through the shield. Most graphic of the four.</p>
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c7c"/></svg><small>128</small></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>7d · Double-line shield · white N</h2>
+    <p class="desc">White shield with an inset border — sticker / patch feel without losing the silhouette.</p>
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c7d"/></svg><small>128</small></div>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>Round 4 — fixing what's wrong with the shipped icon (7d)</h2>
+    <p>The current mark reads as Angular at small sizes: hexagon ring + inner letter is too busy, the inner ring vanishes below 32px, and the N is wider than tall. Three directions that address that — increasing departure from the current silhouette.</p>
+  </div>
+
+  <!-- =================== CONCEPT 11: Refined shield, no ring =================== -->
+  <section class="card">
+    <h2>11 · Refined shield · geometric N (drops the inner ring)</h2>
+    <p class="desc">Same shield silhouette as today, but the inner hexagonal frame is gone — just a white shield with a dark N. The N is geometrically constructed: 12px verticals, 10px diagonal (optically balanced), taller-than-wide proportions. Should survive 16px.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c11"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c11"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c11"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c11"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c11"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c11"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c11"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 12: Inverted — orange tile, dark N =================== -->
+  <section class="card">
+    <h2>12 · Inverted · orange rounded-square, dark N</h2>
+    <p class="desc">Drop the shield entirely. The mark is just the orange tile with a bold dark N. Most distinctive at 16px because there's no internal outline competing with the letter — solid colour block + clear glyph.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c12"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c12"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c12"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c12"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c12"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c12"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c12"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 13: Pure mono N =================== -->
+  <section class="card">
+    <h2>13 · Pure mono · white N on dark rounded-square</h2>
+    <p class="desc">Most minimal: no shield, no orange, no decoration — just a chunky white N on the dark rounded square. Tests whether stripping everything else makes the mark stronger in a row of toolbar icons.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c13"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c13"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c13"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c13"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c13"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c13"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c13"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>Round 5 — Superman shield, N instead of S</h2>
+    <p>Direct translation of the Superman chest shield, swapping the S for an N. Classic Superman is red border + yellow field + red S; we map red→orange, yellow→cream. Two colour treatments below.</p>
+  </div>
+
+  <!-- =================== CONCEPT 14: Superman-faithful colour swap =================== -->
+  <section class="card">
+    <h2>14 · Superman-faithful · orange border, cream field, orange N</h2>
+    <p class="desc">Canonical Superman colour logic translated into the brand palette. The border and the letter share a colour, set inside a cream field — same visual recipe as the original.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c14"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c14"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c14"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c14"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c14"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c14"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c14"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+  <!-- =================== CONCEPT 15: Single-tone shield =================== -->
+  <section class="card">
+    <h2>15 · Single-tone · orange shield, dark N</h2>
+    <p class="desc">Same Superman pentagon, but solid orange with the N punched out in dark. Less faithful to the original three-colour recipe; survives small sizes better because there's no inner border to lose.</p>
+
+    <div class="row">
+      <div class="slot"><svg width="128" height="128" viewBox="0 0 128 128"><use href="#c15"/></svg><small>128</small></div>
+      <div class="slot"><svg width="48"  height="48"  viewBox="0 0 128 128"><use href="#c15"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32"  height="32"  viewBox="0 0 128 128"><use href="#c15"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16"  height="16"  viewBox="0 0 128 128"><use href="#c15"/></svg><small>16</small></div>
+    </div>
+    <div class="row light">
+      <div class="slot"><svg width="48" height="48" viewBox="0 0 128 128"><use href="#c15"/></svg><small>48</small></div>
+      <div class="slot"><svg width="32" height="32" viewBox="0 0 128 128"><use href="#c15"/></svg><small>32</small></div>
+      <div class="slot"><svg width="16" height="16" viewBox="0 0 128 128"><use href="#c15"/></svg><small>16</small></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ SVG SYMBOL DEFS ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+
+    <!-- 1. Bold geometric N: white verticals + orange diagonal -->
+    <symbol id="c1" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <!-- left vertical -->
+      <rect x="28" y="26" width="18" height="76" fill="#fafaf9"/>
+      <!-- right vertical -->
+      <rect x="82" y="26" width="18" height="76" fill="#fafaf9"/>
+      <!-- diagonal (orange), parallelogram from top-left of left bar to bottom-right of right bar -->
+      <polygon points="46,26 64,26 82,102 64,102" fill="#f97316"/>
+    </symbol>
+
+    <!-- 2. N^n exponent: large N + small raised n -->
+    <symbol id="c2" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <!-- big N (white). Use text so it scales crisply at all sizes. -->
+      <text x="22" y="96"
+            font-family="ui-sans-serif, -apple-system, 'SF Pro Display', system-ui, sans-serif"
+            font-size="92" font-weight="800" fill="#fafaf9"
+            letter-spacing="-2">N</text>
+      <!-- raised n (orange) -->
+      <text x="86" y="56"
+            font-family="ui-sans-serif, -apple-system, 'SF Pro Display', system-ui, sans-serif"
+            font-size="44" font-weight="800" fill="#f97316">n</text>
+    </symbol>
+
+    <!-- 3. Grid N: 5x5 tile grid forming an N -->
+    <!-- Layout (1 = lit tile, . = empty):
+         X . . . X
+         X X . . X
+         X . X . X
+         X . . X X
+         X . . . X
+         Diagonal tiles (the three middle ones) are orange. -->
+    <symbol id="c3" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <g fill="#fafaf9">
+        <!-- left column (col 0), all 5 rows -->
+        <rect x="22" y="22" width="16" height="16" rx="3"/>
+        <rect x="22" y="44" width="16" height="16" rx="3"/>
+        <rect x="22" y="66" width="16" height="16" rx="3"/>
+        <rect x="22" y="88" width="16" height="16" rx="3"/>
+        <rect x="22" y="110" width="16" height="8"  rx="3"/>
+        <!-- right column (col 4), all 5 rows -->
+        <rect x="90" y="22" width="16" height="16" rx="3"/>
+        <rect x="90" y="44" width="16" height="16" rx="3"/>
+        <rect x="90" y="66" width="16" height="16" rx="3"/>
+        <rect x="90" y="88" width="16" height="16" rx="3"/>
+        <rect x="90" y="110" width="16" height="8"  rx="3"/>
+        <!-- top-left shoulder (col 1 row 1) -->
+        <rect x="39" y="39" width="16" height="16" rx="3"/>
+        <!-- bottom-right shoulder (col 3 row 3) -->
+        <rect x="73" y="73" width="16" height="16" rx="3"/>
+      </g>
+      <!-- diagonal tile (col 2 row 2), orange -->
+      <rect x="56" y="56" width="16" height="16" rx="3" fill="#f97316"/>
+    </symbol>
+
+    <!-- 4. Negative-space N on orange tile -->
+    <symbol id="c4" viewBox="0 0 128 128">
+      <!-- Use mask: orange square with an N-shaped hole letting black bg show through.
+           Implemented as: orange rect, then black "N" on top — equivalent visually. -->
+      <rect width="128" height="128" rx="26" fill="#f97316"/>
+      <!-- N glyph, drawn with two verticals + a diagonal parallelogram, in near-black -->
+      <g fill="#0a0a0a">
+        <rect x="30" y="26" width="16" height="76"/>
+        <rect x="82" y="26" width="16" height="76"/>
+        <polygon points="46,26 60,26 82,102 68,102"/>
+      </g>
+    </symbol>
+
+    <!-- 5. Original 4-tile, dark N on orange -->
+    <symbol id="c5" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <rect x="22" y="22" width="38" height="38" rx="7" fill="#fafaf9"/>
+      <rect x="68" y="22" width="38" height="38" rx="7" fill="#fafaf9"/>
+      <rect x="22" y="68" width="38" height="38" rx="7" fill="#fafaf9"/>
+      <rect x="68" y="68" width="38" height="38" rx="7" fill="#f97316"/>
+      <text x="87" y="100"
+            text-anchor="middle"
+            font-family="ui-sans-serif, -apple-system, 'SF Pro Display', system-ui, sans-serif"
+            font-size="38" font-weight="900" fill="#0d0d0d"
+            letter-spacing="-1">N</text>
+    </symbol>
+
+    <!-- 6. Original 4-tile, white N on orange -->
+    <symbol id="c6" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <rect x="22" y="22" width="38" height="38" rx="7" fill="#fafaf9"/>
+      <rect x="68" y="22" width="38" height="38" rx="7" fill="#fafaf9"/>
+      <rect x="22" y="68" width="38" height="38" rx="7" fill="#fafaf9"/>
+      <rect x="68" y="68" width="38" height="38" rx="7" fill="#f97316"/>
+      <text x="87" y="100"
+            text-anchor="middle"
+            font-family="ui-sans-serif, -apple-system, 'SF Pro Display', system-ui, sans-serif"
+            font-size="38" font-weight="900" fill="#fafaf9"
+            letter-spacing="-1">N</text>
+    </symbol>
+
+    <!-- 7. Chest-emblem shield with N -->
+    <symbol id="c7" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <!-- pentagon-ish shield: top-flat, sides taper, point at bottom -->
+      <path d="M 64 16 L 108 36 L 100 90 L 64 114 L 28 90 L 20 36 Z"
+            fill="#f97316"/>
+      <text x="64" y="86"
+            text-anchor="middle"
+            font-family="ui-sans-serif, -apple-system, 'SF Pro Display', system-ui, sans-serif"
+            font-size="62" font-weight="900" fill="#0d0d0d"
+            letter-spacing="-2">N</text>
+    </symbol>
+
+    <!-- 8. Comic starburst with N -->
+    <symbol id="c8" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <!-- 24-vertex starburst: 12 outer + 12 inner points around (64,64) -->
+      <polygon points="
+        126,64 106.5,75.4 117.7,95 95.1,95.1 95,117.7 75.4,106.5
+        64,126 52.6,106.5 33,117.7 32.9,95.1 10.3,95 21.5,75.4
+        2,64 21.5,52.6 10.3,33 32.9,32.9 33,10.3 52.6,21.5
+        64,2 75.4,21.5 95,10.3 95.1,32.9 117.7,33 106.5,52.6"
+        fill="#f97316"/>
+      <text x="64" y="84"
+            text-anchor="middle"
+            font-family="ui-sans-serif, -apple-system, 'SF Pro Display', system-ui, sans-serif"
+            font-size="54" font-weight="900" fill="#fafaf9"
+            letter-spacing="-2">N</text>
+    </symbol>
+
+    <!-- 9. Caped N: white N with orange cape billowing behind right shoulder -->
+    <symbol id="c9" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <!-- cape, drawn FIRST so it sits behind the N -->
+      <path d="M 92 28
+               C 124 42, 124 96, 96 112
+               L 78 102
+               C 102 90, 102 56, 86 30 Z"
+            fill="#f97316"/>
+      <!-- N: two white verticals + diagonal -->
+      <rect x="28" y="26" width="18" height="76" fill="#fafaf9"/>
+      <rect x="82" y="26" width="18" height="76" fill="#fafaf9"/>
+      <polygon points="46,26 64,26 82,102 64,102" fill="#fafaf9"/>
+    </symbol>
+
+    <!-- 10. Lightning-bolt N: white verticals + orange Z-bolt as the diagonal -->
+    <symbol id="c10" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <!-- bolt, behind N -->
+      <polygon points="46,26 60,26 68,56 52,64 76,100 62,100 38,64 54,56"
+               fill="#f97316"/>
+      <!-- N verticals on top so they stay crisp -->
+      <rect x="28" y="26" width="18" height="76" fill="#fafaf9"/>
+      <rect x="82" y="26" width="18" height="76" fill="#fafaf9"/>
+    </symbol>
+
+    <!-- 7a. Solid white shield, dark N -->
+    <symbol id="c7a" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <path d="M 64 16 L 108 36 L 100 90 L 64 114 L 28 90 L 20 36 Z"
+            fill="#fafaf9"/>
+      <text x="64" y="86"
+            text-anchor="middle"
+            font-family="ui-sans-serif, -apple-system, 'SF Pro Display', system-ui, sans-serif"
+            font-size="62" font-weight="900" fill="#0d0d0d"
+            letter-spacing="-2">N</text>
+    </symbol>
+
+    <!-- 7b. Outline shield, geometric white N. Shrunk ~85% for canvas
+         padding; N rendered as rects+polygon (not <text>) so it stays
+         crisp at small sizes. Stroke bumped to 10 so it survives 16px. -->
+    <symbol id="c7b" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <path d="M 64 22 L 101 40 L 95 86 L 64 107 L 33 86 L 27 40 Z"
+            fill="none" stroke="#fafaf9" stroke-width="10"
+            stroke-linejoin="round" stroke-linecap="round"/>
+      <g fill="#fafaf9">
+        <rect x="42" y="42" width="12" height="44"/>
+        <rect x="74" y="42" width="12" height="44"/>
+        <polygon points="54,42 62,42 86,86 78,86"/>
+      </g>
+    </symbol>
+
+    <!-- 7c. White shield with N cutout (negative space) -->
+    <mask id="m7c" maskUnits="userSpaceOnUse" x="0" y="0" width="128" height="128">
+      <rect width="128" height="128" fill="white"/>
+      <text x="64" y="86"
+            text-anchor="middle"
+            font-family="ui-sans-serif, -apple-system, 'SF Pro Display', system-ui, sans-serif"
+            font-size="62" font-weight="900" fill="black"
+            letter-spacing="-2">N</text>
+    </mask>
+    <symbol id="c7c" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <path d="M 64 16 L 108 36 L 100 90 L 64 114 L 28 90 L 20 36 Z"
+            fill="#fafaf9" mask="url(#m7c)"/>
+    </symbol>
+
+    <!-- 7d. Double-line shield (white shield with dark inset border), white N as paths -->
+    <symbol id="c7d" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <path d="M 64 14 L 110 35 L 102 91 L 64 116 L 26 91 L 18 35 Z" fill="#fafaf9"/>
+      <path d="M 64 26 L 100 42 L 94 86 L 64 105 L 34 86 L 28 42 Z" fill="#0d0d0d"/>
+      <rect x="42" y="44" width="11" height="44" fill="#fafaf9"/>
+      <rect x="75" y="44" width="11" height="44" fill="#fafaf9"/>
+      <polygon points="53,44 64,44 86,88 75,88" fill="#fafaf9"/>
+    </symbol>
+
+    <!-- 11. Refined shield, no inner ring, geometric dark N -->
+    <symbol id="c11" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <path d="M 64 14 L 110 35 L 102 91 L 64 116 L 26 91 L 18 35 Z" fill="#fafaf9"/>
+      <!-- N: 12px verticals, 10px diagonal, taller-than-wide -->
+      <g fill="#0d0d0d">
+        <rect x="40" y="40" width="12" height="56"/>
+        <rect x="76" y="40" width="12" height="56"/>
+        <polygon points="52,40 62,40 76,96 66,96"/>
+      </g>
+    </symbol>
+
+    <!-- 12. Inverted: orange tile, dark geometric N -->
+    <symbol id="c12" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#f97316"/>
+      <g fill="#0d0d0d">
+        <rect x="26" y="22" width="18" height="84"/>
+        <rect x="84" y="22" width="18" height="84"/>
+        <polygon points="44,22 58,22 84,106 70,106"/>
+      </g>
+    </symbol>
+
+    <!-- 13. Pure mono: white geometric N on dark rounded-square -->
+    <symbol id="c13" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <g fill="#fafaf9">
+        <rect x="26" y="22" width="18" height="84"/>
+        <rect x="84" y="22" width="18" height="84"/>
+        <polygon points="44,22 58,22 84,106 70,106"/>
+      </g>
+    </symbol>
+
+    <!-- 14. Superman shield, N: orange border + cream field + orange N.
+         Path: curved top (peak at y=14, corners at y=36), straight sides
+         angling to the bottom point. Inner field is the same shape inset ~8px. -->
+    <symbol id="c14" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <!-- outer shield (orange border) -->
+      <path d="M 14 36 Q 64 14 114 36 L 100 86 L 64 120 L 28 86 Z"
+            fill="#f97316"/>
+      <!-- inner field (cream), inset -->
+      <path d="M 26 40 Q 64 24 102 40 L 90 80 L 64 108 L 38 80 Z"
+            fill="#fafaf9"/>
+      <!-- N inside the field — bold, fills the wider upper portion -->
+      <g fill="#f97316">
+        <rect x="40" y="40" width="14" height="48"/>
+        <rect x="74" y="40" width="14" height="48"/>
+        <polygon points="54,40 64,40 88,88 78,88"/>
+      </g>
+    </symbol>
+
+    <!-- 15. Single-tone Superman shield: solid orange + dark N -->
+    <symbol id="c15" viewBox="0 0 128 128">
+      <rect width="128" height="128" rx="26" fill="#0d0d0d"/>
+      <path d="M 14 36 Q 64 14 114 36 L 100 86 L 64 120 L 28 86 Z"
+            fill="#f97316"/>
+      <g fill="#0d0d0d">
+        <rect x="38" y="36" width="14" height="54"/>
+        <rect x="76" y="36" width="14" height="54"/>
+        <polygon points="52,36 64,36 90,90 78,90"/>
+      </g>
+    </symbol>
+
+  </defs>
+</svg>
+
+</body>
+</html>

@@ -103,12 +103,23 @@
   const entry = state.blocklist.find((e) => hostMatches(e.domain, host));
   if (!entry) return;
 
-  const bypassed = (() => {
+  function fromExternalReferrer() {
+    const ref = document.referrer;
+    if (!ref) return false;
+    let refHost;
     try {
-      return sessionStorage.getItem(BYPASS_KEY) === "1";
+      refHost = new URL(ref).hostname;
     } catch (_) {
       return false;
     }
+    return !hostMatches(entry.domain, refHost);
+  }
+
+  const bypassed = (() => {
+    try {
+      if (sessionStorage.getItem(BYPASS_KEY) === "1") return true;
+    } catch (_) {}
+    return fromExternalReferrer();
   })();
 
   const budgetSec = entry.minutes ? entry.minutes * 60 : null;

@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-05-02 (v0.7)
+
+### ✨ Features
+- Monochrome favicons — per-host allowlist in settings. Matching pages have their favicon desaturated to grayscale (canvas re-encode to data URI). MutationObserver re-applies when the page swaps the icon (e.g. Gmail repaints with the unread badge). Host match covers exact host or any subdomain. Already-open tabs reload when a new host is added
+
+### 🔧 Improvements
+- Time-block lets through inbound links from other sites — if `document.referrer` is from a different host, the tab bypasses both the budget and the window block. Same-host nav re-checks on full reload; SPA nav within the tab stays through. Typing the URL or opening from a bookmark still blocks
+
+## 2026-05-01 (v0.6)
+
+### ✨ Features
+- Doomscroll-o-meter on `x.com` — small horizontal bar next to the time-block timer that charges as you scroll fast and decays while you read. Color shifts green → yellow → red; hits 100% and the page locks for 8 seconds behind a "take a breath" overlay before resuming with a partial cooldown
+
+## 2026-05-01 (v0.5.1)
+
+### 🔧 Improvements
+- Brand name capitalisation: extension now displays as "SuperN" (manifest name, toolbar tooltip, settings page title and heading, command descriptions). Internal identifiers (extension id, CSS classes, storage keys) unchanged
+
 ## 2026-05-01 (v0.5)
 
 ### ✨ Features

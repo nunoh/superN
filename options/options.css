@@ -145,13 +145,15 @@ select {
   opacity: 0.4;
 }
 
-.snoozed-list {
+.snoozed-list,
+.mono-list {
   list-style: none;
   padding: 0;
   margin: 0 0 1.25rem;
 }
 
-.snoozed-list li {
+.snoozed-list li,
+.mono-list li {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -159,13 +161,20 @@ select {
   border-bottom: 1px solid color-mix(in oklab, currentColor 10%, transparent);
 }
 
-.snoozed-list li.empty {
+.snoozed-list li.empty,
+.mono-list li.empty {
   display: block;
   opacity: 0.5;
   font-style: italic;
   text-align: center;
   padding: 1rem;
   border-bottom: none;
+}
+
+.mono-list li > span {
+  flex: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
 }
 
 .snoozed-main {

@@ -353,7 +353,62 @@ async function loadVideoSpeed() {
   });
 }
 
+const MONO_KEY = "monoFavicons";
+const monoList = document.querySelector("#mono-list");
+const monoForm = document.querySelector("#mono-form");
+const monoDomain = document.querySelector("#mono-domain");
+
+async function loadMono() {
+  if (!monoList) return;
+  const { [MONO_KEY]: list = [] } = await browser.storage.local.get(MONO_KEY);
+  monoList.innerHTML = "";
+  if (list.length === 0) {
+    const li = document.createElement("li");
+    li.className = "empty";
+    li.textContent = "none.";
+    monoList.appendChild(li);
+    return;
+  }
+  for (const host of list) {
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    span.textContent = host;
+    const btn = document.createElement("button");
+    btn.className = "remove";
+    btn.textContent = "remove";
+    btn.addEventListener("click", async () => {
+      const { [MONO_KEY]: cur = [] } = await browser.storage.local.get(MONO_KEY);
+      await browser.storage.local.set({
+        [MONO_KEY]: cur.filter((h) => h !== host),
+      });
+    });
+    li.append(span, btn);
+    monoList.appendChild(li);
+  }
+}
+
+if (monoForm) {
+  monoForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const host = normalizeDomain(monoDomain.value);
+    if (!host) return;
+    const { [MONO_KEY]: cur = [] } = await browser.storage.local.get(MONO_KEY);
+    if (cur.includes(host)) {
+      monoDomain.value = "";
+      return;
+    }
+    await browser.storage.local.set({ [MONO_KEY]: [...cur, host] });
+    monoDomain.value = "";
+    monoDomain.focus();
+  });
+}
+
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && changes[MONO_KEY]) loadMono();
+});
+
 load();
 loadSnoozed();
 loadShortcuts();
 loadVideoSpeed();
+loadMono();

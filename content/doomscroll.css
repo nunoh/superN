@@ -1,0 +1,89 @@
+#__supern_doom__ {
+  position: fixed !important;
+  top: 8px !important;
+  left: 8px !important;
+  width: 80px !important;
+  height: 20px !important;
+  z-index: 2147483647 !important;
+  background: rgba(0, 0, 0, 0.72) !important;
+  border-radius: 4px !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  padding: 3px !important;
+  box-sizing: border-box !important;
+}
+
+#__supern_doom_fill__ {
+  height: 100% !important;
+  width: 0% !important;
+  background: hsl(120, 70%, 45%) !important;
+  border-radius: 2px !important;
+  transition: width 180ms linear, background 180ms linear !important;
+}
+
+#__supern_doom__.__supern_doom_warn__ {
+  animation: __supern_doom_pulse__ 0.6s ease-in-out infinite alternate !important;
+}
+
+@keyframes __supern_doom_pulse__ {
+  from { box-shadow: 0 0 0 0 rgba(220, 40, 40, 0); }
+  to   { box-shadow: 0 0 8px 2px rgba(220, 40, 40, 0.6); }
+}
+
+#__supern_doom_overlay__ {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important;
+  background: rgba(10, 10, 10, 0.92) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+  color: #f0f0f0 !important;
+  animation: __supern_doom_fade__ 220ms ease-out !important;
+}
+
+@keyframes __supern_doom_fade__ {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+#__supern_doom_overlay__ .__supern_doom_card__ {
+  text-align: center !important;
+  max-width: 28rem !important;
+  padding: 2rem !important;
+}
+
+#__supern_doom_overlay__ .__supern_doom_title__ {
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  margin-bottom: 0.6rem !important;
+}
+
+#__supern_doom_overlay__ .__supern_doom_msg__ {
+  opacity: 0.75 !important;
+  margin-bottom: 1.4rem !important;
+  line-height: 1.4 !important;
+}
+
+#__supern_doom_overlay__ .__supern_doom_dismiss__ {
+  font: inherit !important;
+  padding: 0.5rem 1.1rem !important;
+  border-radius: 0.375rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  background: transparent !important;
+  color: inherit !important;
+  cursor: pointer !important;
+}
+
+#__supern_doom_overlay__ .__supern_doom_dismiss__:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.45 !important;
+}
+
+#__supern_doom_overlay__ .__supern_doom_dismiss__:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}

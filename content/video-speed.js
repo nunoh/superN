@@ -153,16 +153,13 @@
       } else if (k === "d") {
         e.preventDefault();
         setRateAll((r) => r + STEP);
-      } else if (k === "r") {
-        e.preventDefault();
-        setRateAll(() => 1);
       } else if (k === "z") {
         e.preventDefault();
         seekAll(-SEEK_SECONDS);
       } else if (k === "x") {
         e.preventDefault();
         seekAll(SEEK_SECONDS);
-      } else if (k === "g") {
+      } else if (k === "r") {
         e.preventDefault();
         setRateAll((r) => (Math.abs(r - preferred) < 0.01 ? 1 : preferred));
       } else if (k === "v") {
