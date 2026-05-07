@@ -6,8 +6,12 @@
   const PREFERRED_KEY = "preferredSpeed";
   const DEFAULT_PREFERRED = 2.0;
 
+  const REVEAL_ON_ATTACH_MS = 5000;
+  const REVEAL_ON_INTERACTION_MS = 3000;
+
   let preferred = DEFAULT_PREFERRED;
-  let overlaysHidden = false;
+  let pinned = false;
+  let hideTimer = null;
 
   browser.storage.local.get(PREFERRED_KEY).then((r) => {
     if (typeof r[PREFERRED_KEY] === "number") preferred = r[PREFERRED_KEY];
@@ -45,11 +49,39 @@
     }
   }
 
-  function setOverlaysHidden(hidden) {
-    overlaysHidden = hidden;
+  function showAll() {
     for (const { overlay } of tracked.values()) {
-      overlay.classList.toggle("hidden", hidden);
+      overlay.classList.remove("hidden");
     }
+  }
+
+  function hideAll() {
+    for (const { overlay } of tracked.values()) {
+      overlay.classList.add("hidden");
+    }
+  }
+
+  function reveal(ms) {
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+    showAll();
+    if (pinned) return;
+    hideTimer = setTimeout(() => {
+      hideAll();
+      hideTimer = null;
+    }, ms);
+  }
+
+  function togglePinned() {
+    pinned = !pinned;
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+    if (pinned) showAll();
+    else hideAll();
   }
 
   function isThumbnailPreview(video) {
@@ -63,8 +95,7 @@
     if (isThumbnailPreview(video)) return;
 
     const overlay = document.createElement("div");
-    overlay.className = "__supern_speed__";
-    if (overlaysHidden) overlay.classList.add("hidden");
+    overlay.className = "__supern_speed__ hidden";
     overlay.textContent = fmt(video.playbackRate);
     document.body.appendChild(overlay);
 
@@ -88,6 +119,8 @@
     };
 
     tracked.set(video, rec);
+    if (pinned) overlay.classList.remove("hidden");
+    else reveal(REVEAL_ON_ATTACH_MS);
   }
 
   function detach(video) {
@@ -150,21 +183,26 @@
       if (k === "s") {
         e.preventDefault();
         setRateAll((r) => r - STEP);
+        reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "d") {
         e.preventDefault();
         setRateAll((r) => r + STEP);
+        reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "z") {
         e.preventDefault();
         seekAll(-SEEK_SECONDS);
+        reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "x") {
         e.preventDefault();
         seekAll(SEEK_SECONDS);
+        reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "r") {
         e.preventDefault();
         setRateAll((r) => (Math.abs(r - preferred) < 0.01 ? 1 : preferred));
+        reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "v") {
         e.preventDefault();
-        setOverlaysHidden(!overlaysHidden);
+        togglePinned();
       }
     },
     true

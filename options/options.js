@@ -407,8 +407,25 @@ browser.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && changes[MONO_KEY]) loadMono();
 });
 
+async function loadBuildStamp() {
+  const el = document.querySelector("#loaded-at");
+  if (!el) return;
+  const { __supern_loaded_at: ts } = await browser.storage.local.get(
+    "__supern_loaded_at"
+  );
+  if (!ts) {
+    el.textContent = "—";
+    return;
+  }
+  const d = new Date(ts);
+  const date = d.toISOString().slice(0, 10);
+  const time = d.toTimeString().slice(0, 8);
+  el.textContent = `${date} ${time}`;
+}
+
 load();
 loadSnoozed();
 loadShortcuts();
 loadVideoSpeed();
 loadMono();
+loadBuildStamp();

@@ -67,15 +67,6 @@
     return "blocked.";
   }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, (c) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;",
-    }[c]));
-  }
 
   async function readState() {
     const stored = await browser.storage.local.get([
@@ -103,24 +94,21 @@
   const entry = state.blocklist.find((e) => hostMatches(e.domain, host));
   if (!entry) return;
 
-  function fromExternalReferrer() {
-    const ref = document.referrer;
-    if (!ref) return false;
-    let refHost;
+  let sessionBypass = false;
+  try {
+    sessionBypass = sessionStorage.getItem(BYPASS_KEY) === "1";
+  } catch (_) {}
+
+  let linkBypass = false;
+  if (!sessionBypass) {
     try {
-      refHost = new URL(ref).hostname;
-    } catch (_) {
-      return false;
-    }
-    return !hostMatches(entry.domain, refHost);
+      linkBypass = await browser.runtime.sendMessage({
+        type: "supern-bypass-check",
+      });
+    } catch (_) {}
   }
 
-  const bypassed = (() => {
-    try {
-      if (sessionStorage.getItem(BYPASS_KEY) === "1") return true;
-    } catch (_) {}
-    return fromExternalReferrer();
-  })();
+  const bypassed = sessionBypass || linkBypass;
 
   const budgetSec = entry.minutes ? entry.minutes * 60 : null;
   let usedSec = state.usage[entry.domain] || 0;
@@ -140,14 +128,8 @@
 
     const isSoft = entry.mode === "soft";
     const msg = reasonText(reasons || []);
-    const btnHtml = isSoft
-      ? "<button id='__supern_bypass_btn__' disabled>open anyway (10s)</button>"
-      : "";
 
-    document.documentElement.innerHTML =
-      '<head><meta charset="utf-8"><title>blocked — ' +
-      escapeHtml(entry.domain) +
-      '</title><style>' +
+    const css =
       "html,body{margin:0;padding:0;height:100%;background:#0e0e0e;color:#e8e8e8;" +
       "font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;}" +
       ".wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;" +
@@ -159,17 +141,41 @@
       "border-radius:.375rem;border:1px solid rgba(255,255,255,.22);" +
       "background:transparent;color:inherit;cursor:pointer;}" +
       "#__supern_bypass_btn__:disabled{cursor:not-allowed;opacity:.45;}" +
-      "#__supern_bypass_btn__:not(:disabled):hover{background:rgba(255,255,255,.08);}" +
-      "</style></head><body><div class='wrap'>" +
-      "<div class='dom'>" +
-      escapeHtml(entry.domain) +
-      "</div>" +
-      "<div class='msg'>" +
-      escapeHtml(msg) +
-      "</div>" +
-      btnHtml +
-      "<div class='reset'>resets at midnight.</div>" +
-      "</div></body>";
+      "#__supern_bypass_btn__:not(:disabled):hover{background:rgba(255,255,255,.08);}";
+
+    const head = document.createElement("head");
+    const meta = document.createElement("meta");
+    meta.setAttribute("charset", "utf-8");
+    const title = document.createElement("title");
+    title.textContent = "blocked — " + entry.domain;
+    const style = document.createElement("style");
+    style.textContent = css;
+    head.append(meta, title, style);
+
+    const body = document.createElement("body");
+    const wrap = document.createElement("div");
+    wrap.className = "wrap";
+    const domEl = document.createElement("div");
+    domEl.className = "dom";
+    domEl.textContent = entry.domain;
+    const msgEl = document.createElement("div");
+    msgEl.className = "msg";
+    msgEl.textContent = msg;
+    wrap.append(domEl, msgEl);
+    if (isSoft) {
+      const btn = document.createElement("button");
+      btn.id = "__supern_bypass_btn__";
+      btn.disabled = true;
+      btn.textContent = "open anyway (10s)";
+      wrap.append(btn);
+    }
+    const reset = document.createElement("div");
+    reset.className = "reset";
+    reset.textContent = "resets at midnight.";
+    wrap.append(reset);
+    body.append(wrap);
+
+    document.documentElement.replaceChildren(head, body);
 
     if (isSoft) {
       const btn = document.getElementById("__supern_bypass_btn__");

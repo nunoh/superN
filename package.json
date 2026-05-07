@@ -1,9 +1,16 @@
 {
   "name": "supern",
-  "version": "0.3.0",
+  "version": "0.8.0",
   "private": true,
   "description": "Tiny browser tools. Currently: a daily time-block for distracting sites.",
   "scripts": {
-    "cloc": "cloc background.js content options manifest.json"
+    "cloc": "cloc background.js content options manifest.json",
+    "build": "web-ext build --overwrite-dest --ignore-files package.json package-lock.json node_modules web-ext-artifacts CHANGELOG.md SPEC.md .claude .env",
+    "sign": "web-ext sign --channel=unlisted --api-key=$AMO_JWT_ISSUER --api-secret=$AMO_JWT_SECRET --ignore-files package.json package-lock.json node_modules web-ext-artifacts CHANGELOG.md SPEC.md .claude .env",
+    "install-ext": "open -a Firefox \"$(ls -t web-ext-artifacts/*.xpi | head -1)\"",
+    "release": "npm run sign && npm run install-ext"
+  },
+  "devDependencies": {
+    "web-ext": "^8.10.0"
   }
 }

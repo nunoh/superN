@@ -22,6 +22,13 @@
   let cur = -1;
   let lastFocused = null;
 
+  function activeResult() {
+    const results = getResults();
+    if (results.length === 0) return null;
+    if (cur < 0 || cur >= results.length) cur = 0;
+    return results[cur];
+  }
+
   function highlight(el) {
     const target = el.querySelector("h3") || el;
     if (lastFocused && lastFocused !== target) {
@@ -55,6 +62,14 @@
     return true;
   }
 
+  function openActiveResult() {
+    const el = activeResult();
+    if (!el) return false;
+    el.focus({ preventScroll: true });
+    el.click();
+    return true;
+  }
+
   if (!selectFirst()) {
     const obs = new MutationObserver(() => {
       if (selectFirst()) obs.disconnect();
@@ -67,6 +82,7 @@
     "keydown",
     (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.isComposing) return;
       if (inEditable(e.target)) return;
 
       if (e.key === "j" || e.key === "ArrowDown") {
@@ -81,6 +97,11 @@
           e.preventDefault();
           box.focus();
           if (typeof box.select === "function") box.select();
+        }
+      } else if (e.key === "Enter") {
+        if (openActiveResult()) {
+          e.preventDefault();
+          e.stopPropagation();
         }
       }
     },

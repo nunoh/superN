@@ -68,6 +68,13 @@ section + section {
   margin: 0 0 1.25rem;
 }
 
+.build-stamp {
+  margin-top: 3rem;
+  font-size: 0.7rem;
+  opacity: 0.4;
+  font-variant-numeric: tabular-nums;
+}
+
 .hint.small {
   font-size: 0.75rem;
   margin: 0.5rem 0 0;

@@ -1,3 +1,7 @@
+// Stamp the moment this background page (re)spawned. Surfaced in the settings
+// page so a dev-reload — or a Firefox suspend/respawn — is visibly verifiable.
+browser.storage.local.set({ __supern_loaded_at: Date.now() });
+
 browser.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason !== "install") return;
   const stored = await browser.storage.local.get("blocklist");
@@ -10,6 +14,39 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
 
 browser.action.onClicked.addListener(() => {
   browser.runtime.openOptionsPage();
+});
+
+// ---------------------------------------------------------------------------
+// Direct-link bypass for time-blocked sites.
+// document.referrer is unreliable (Referrer-Policy: no-referrer strips it on
+// many sites and chat apps), so we use webNavigation transition types: tabs
+// that committed via "link" or "form_submit" get a bypass flag the content
+// script reads via message. Typed / bookmarked / reloaded navs do not.
+// ---------------------------------------------------------------------------
+
+const linkBypassTabs = new Set();
+const LINK_TRANSITIONS = new Set(["link", "form_submit"]);
+
+if (browser.webNavigation && browser.webNavigation.onCommitted) {
+  browser.webNavigation.onCommitted.addListener((details) => {
+    if (details.frameId !== 0) return;
+    if (LINK_TRANSITIONS.has(details.transitionType)) {
+      linkBypassTabs.add(details.tabId);
+    } else {
+      linkBypassTabs.delete(details.tabId);
+    }
+  });
+}
+
+browser.tabs.onRemoved.addListener((tabId) => {
+  linkBypassTabs.delete(tabId);
+});
+
+browser.runtime.onMessage.addListener((msg, sender) => {
+  if (msg && msg.type === "supern-bypass-check") {
+    const tabId = sender.tab && sender.tab.id;
+    return Promise.resolve(tabId != null && linkBypassTabs.has(tabId));
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -143,54 +180,20 @@ browser.alarms.onAlarm.addListener(async (alarm) => {
 })();
 
 // ---------------------------------------------------------------------------
-// Recent-tab tracking (per-window).
-// recents holds {tabId, windowId} most-recent-first. Index 0 in any window's
-// view is the currently active tab in that window; index 1 is the previous,
-// index 2 the one before that.
+// Recent-tab jump. Firefox maintains tab.lastAccessed natively, so we sort the
+// current window's tabs by it on demand. An MV3 event page can be suspended at
+// any time — keeping our own in-memory queue means it gets wiped and the
+// shortcut silently no-ops until the user manually changes tabs again.
 // ---------------------------------------------------------------------------
 
-const RECENTS_MAX = 24;
-let recents = [];
-
-function pushRecent(tabId, windowId) {
-  recents = recents.filter((r) => r.tabId !== tabId);
-  recents.unshift({ tabId, windowId });
-  if (recents.length > RECENTS_MAX) recents.length = RECENTS_MAX;
-}
-
-browser.tabs.onActivated.addListener(({ tabId, windowId }) => {
-  pushRecent(tabId, windowId);
-});
-
-browser.tabs.onRemoved.addListener((tabId) => {
-  recents = recents.filter((r) => r.tabId !== tabId);
-});
-
-// Seed recents with each window's currently active tab so shortcuts work
-// immediately after extension load (otherwise recents starts empty until the
-// user changes tabs).
-(async () => {
-  try {
-    const active = await browser.tabs.query({ active: true });
-    for (const t of active) pushRecent(t.id, t.windowId);
-  } catch (_) {}
-})();
-
 async function gotoRecent(n) {
-  let win;
-  try {
-    win = await browser.windows.getCurrent();
-  } catch (_) {
-    return;
-  }
-  const inWin = recents.filter((r) => r.windowId === win.id);
-  const target = inWin[n];
+  const tabs = await browser.tabs.query({ currentWindow: true });
+  const sorted = tabs.sort((a, b) => b.lastAccessed - a.lastAccessed);
+  const target = sorted[n];
   if (!target) return;
   try {
-    await browser.tabs.update(target.tabId, { active: true });
-  } catch (_) {
-    recents = recents.filter((r) => r.tabId !== target.tabId);
-  }
+    await browser.tabs.update(target.id, { active: true });
+  } catch (_) {}
 }
 
 // ---------------------------------------------------------------------------

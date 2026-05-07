@@ -6,7 +6,7 @@
 - Monochrome favicons — per-host allowlist in settings. Matching pages have their favicon desaturated to grayscale (canvas re-encode to data URI). MutationObserver re-applies when the page swaps the icon (e.g. Gmail repaints with the unread badge). Host match covers exact host or any subdomain. Already-open tabs reload when a new host is added
 
 ### 🔧 Improvements
-- Time-block lets through inbound links from other sites — if `document.referrer` is from a different host, the tab bypasses both the budget and the window block. Same-host nav re-checks on full reload; SPA nav within the tab stays through. Typing the URL or opening from a bookmark still blocks
+- Time-block lets through inbound links — tabs that committed via a link click (or form submit) bypass both the budget and the window block for that navigation. Detected via `webNavigation` transition type, so referrer-stripping sites and chat apps still work. Typing the URL, opening from a bookmark, or reloading still blocks
 
 ## 2026-05-01 (v0.6)
 
