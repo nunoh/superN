@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### 🔧 Improvements
+- Time-block daily budgets now reset at 4am local time instead of midnight, so late-night browsing before 4am counts toward the previous day
+
 ## 2026-05-02 (v0.7)
 
 ### ✨ Features

@@ -11,7 +11,7 @@
 
 | Feature                | Replaces                                                                     | Notes                                                                                        |
 | ---------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Time-block             | [LeechBlock NG](https://addons.mozilla.org/en-US/firefox/addon/leechblock-ng/) | Per-site daily minute budget, daily window block, hard / soft (10s-delayed override) modes. Inbound links from other sites bypass the block for that tab |
+| Time-block             | [LeechBlock NG](https://addons.mozilla.org/en-US/firefox/addon/leechblock-ng/) | Per-site daily minute budget reset at 4am local time, daily window block, hard / soft (10s-delayed override) modes. Inbound links from other sites bypass the block for that tab |
 | Pin / unpin tab        | [Pin Unpin Tab](https://addons.mozilla.org/en-US/firefox/addon/pinunpin-tab/)  | Toggle on the active tab                                                                     |
 | Move tab hotkeys       | [Move Tab Hotkeys](https://addons.mozilla.org/en-US/firefox/addon/move-tab-hotkeys/) | Move active tab left / right                                                                 |
 | Most recent tab        | [Most Recent Tab](https://addons.mozilla.org/en-US/firefox/addon/most-recent-tab/) | Per-window alternation; also jump to second-most-recent                                      |

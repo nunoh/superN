@@ -1,8 +1,10 @@
 (async function () {
   const BYPASS_KEY = "__supern_bypass__";
+  const RESET_HOUR = 4;
 
-  function todayStr() {
+  function usageDayStr() {
     const d = new Date();
+    d.setHours(d.getHours() - RESET_HOUR);
     return (
       d.getFullYear() +
       "-" +
@@ -74,10 +76,10 @@
       "usage",
       "resetDate",
     ]);
-    const today = todayStr();
-    if (stored.resetDate !== today) {
+    const usageDay = usageDayStr();
+    if (stored.resetDate !== usageDay) {
       stored.usage = {};
-      stored.resetDate = today;
+      stored.resetDate = usageDay;
       await browser.storage.local.set({
         usage: stored.usage,
         resetDate: stored.resetDate,
@@ -171,7 +173,7 @@
     }
     const reset = document.createElement("div");
     reset.className = "reset";
-    reset.textContent = "resets at midnight.";
+    reset.textContent = "resets at 4am.";
     wrap.append(reset);
     body.append(wrap);
 
@@ -226,7 +228,7 @@
 
   let lastTickMs = Date.now();
   let dirtySec = 0;
-  let scriptDay = todayStr();
+  let scriptDay = usageDayStr();
 
   tickHandle = setInterval(() => {
     if (blocked) return;
@@ -234,8 +236,8 @@
     const dt = (now - lastTickMs) / 1000;
     lastTickMs = now;
 
-    if (todayStr() !== scriptDay) {
-      scriptDay = todayStr();
+    if (usageDayStr() !== scriptDay) {
+      scriptDay = usageDayStr();
       usedSec = 0;
       dirtySec = 0;
     }

@@ -9,9 +9,11 @@ const snoozedList = document.querySelector("#snoozed-list");
 
 const SNOOZED_KEY = "snoozed";
 const SNOOZE_ALARM_PREFIX = "snooze-";
+const TIME_BLOCK_RESET_HOUR = 4;
 
-function todayStr() {
+function usageDayStr() {
   const d = new Date();
+  d.setHours(d.getHours() - TIME_BLOCK_RESET_HOUR);
   return (
     d.getFullYear() +
     "-" +
@@ -60,7 +62,7 @@ async function updateEntry(domain, patch) {
 async function load() {
   const { blocklist = [], usage = {}, resetDate = "" } =
     await browser.storage.local.get(["blocklist", "usage", "resetDate"]);
-  const liveUsage = resetDate === todayStr() ? usage : {};
+  const liveUsage = resetDate === usageDayStr() ? usage : {};
 
   tbody.innerHTML = "";
   if (blocklist.length === 0) {
@@ -278,7 +280,7 @@ async function refreshUsed() {
     "usage",
     "resetDate",
   ]);
-  const liveUsage = resetDate === todayStr() ? usage : {};
+  const liveUsage = resetDate === usageDayStr() ? usage : {};
   for (const cell of tbody.querySelectorAll(".used-cell")) {
     cell.textContent = fmtUsed(liveUsage[cell.dataset.domain]);
   }
