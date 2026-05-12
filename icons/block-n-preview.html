@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SuperN - block N icon variations</title>
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #141414;
+    --surface-2: #1d1d1d;
+    --line: #2c2c2c;
+    --fg: #fafaf9;
+    --muted: #9b9b96;
+    --orange: #f97316;
+    --paper: #f4f4f2;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font: 14px/1.45 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  body {
+    padding: 32px;
+  }
+
+  header {
+    display: grid;
+    gap: 8px;
+    max-width: 1040px;
+    margin: 0 0 24px;
+  }
+
+  h1,
+  h2,
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: 650;
+    line-height: 1.2;
+  }
+
+  header p {
+    max-width: 760px;
+    color: var(--muted);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: min(100%, 1040px);
+    margin: 0 0 26px;
+    padding: 10px 12px;
+    overflow: auto;
+    background: #ededec;
+    border: 1px solid #d8d8d4;
+    border-radius: 8px;
+  }
+
+  .toolbar-label {
+    flex: 0 0 auto;
+    color: #555;
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  .toolbar-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toolbar-slot {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .toolbar-slot:hover {
+    background: #d8d8d4;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    max-width: 1040px;
+  }
+
+  .card {
+    display: grid;
+    gap: 16px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .meta {
+    display: grid;
+    gap: 4px;
+  }
+
+  .meta h2 {
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.2;
+  }
+
+  .meta p {
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+
+  .sample-row {
+    display: flex;
+    align-items: end;
+    gap: 18px;
+    min-height: 160px;
+    padding: 16px;
+    overflow: auto;
+    background: #050505;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+  }
+
+  .sample-row.light {
+    min-height: 86px;
+    background: var(--paper);
+    border-color: #d8d8d4;
+  }
+
+  .slot {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+
+  .slot small {
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .light .slot small {
+    color: #686864;
+  }
+
+  svg {
+    display: block;
+    shape-rendering: crispEdges;
+  }
+
+  @media (max-width: 860px) {
+    body {
+      padding: 20px;
+    }
+
+    main {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>SuperN scaled-highlight 4x4 grid variations</h1>
+  <p>Sixth pass: the full 4x4 grid stays regular, while the squares that form the N scale up from their centers.</p>
+</header>
+
+<section class="toolbar" aria-label="Browser toolbar scale check">
+  <div class="toolbar-label">Toolbar check</div>
+  <div id="toolbar-icons" class="toolbar-icons"></div>
+</section>
+
+<main id="cards"></main>
+
+<script>
+  const white = "#fafaf9";
+  const dark = "#0a0a0a";
+  const nearDark = "#101010";
+  const orange = "#f97316";
+  const gridBarely = "#161616";
+  const gridDark = "#242424";
+  const gridSoft = "#303030";
+  const gridLight = "#deded9";
+  const paper = "#f4f4f2";
+  const graphite = "#2b2b2b";
+
+  const base4 = {
+    cols: 4,
+    rows: 4,
+    padding: 24,
+    gap: 7,
+    radius: 26,
+    blockRadius: 0
+  };
+
+  const variants = [
+    {
+      ...base4,
+      id: "scale-100",
+      title: "A. Baseline 100%",
+      desc: "Reference version: highlighted N squares are the same size as the background grid.",
+      bg: dark,
+      ghost: gridDark,
+      block: white,
+      blockScale: 1,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-110",
+      title: "B. Scaled N 110%",
+      desc: "A small boost. The N gets stronger, but still feels like individual squares.",
+      bg: dark,
+      ghost: gridDark,
+      block: white,
+      blockScale: 1.1,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-118",
+      title: "C. Scaled N 118%",
+      desc: "More confident at 16 px, with the highlighted cells starting to dominate the grid.",
+      bg: dark,
+      ghost: gridDark,
+      block: white,
+      blockScale: 1.18,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-126",
+      title: "D. Scaled N 126%",
+      desc: "A bold N while retaining visible separation between highlighted blocks.",
+      bg: dark,
+      ghost: gridDark,
+      block: white,
+      blockScale: 1.26,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-138",
+      title: "E. Scaled N 138%",
+      desc: "Near-touching highlighted squares. More logo-like, less grid-like.",
+      bg: dark,
+      ghost: gridDark,
+      block: white,
+      blockScale: 1.38,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-118-quiet",
+      title: "F. 118% quiet grid",
+      desc: "Same medium scale, but the background grid recedes so the N reads cleaner.",
+      bg: dark,
+      ghost: gridBarely,
+      block: white,
+      blockScale: 1.18,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-126-visible",
+      title: "G. 126% visible grid",
+      desc: "Bolder N with a more apparent construction grid behind it.",
+      bg: dark,
+      ghost: gridSoft,
+      block: white,
+      blockScale: 1.26,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-118-soft",
+      title: "H. 118% soft white",
+      desc: "Medium scale with a warmer off-white highlight; softer than pure white.",
+      bg: dark,
+      ghost: gridDark,
+      block: "#e9e7df",
+      blockScale: 1.18,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-118-graphite",
+      title: "I. 118% graphite tile",
+      desc: "Softer monochrome tile, keeping the scaled N but reducing black/white harshness.",
+      bg: graphite,
+      ghost: "#444444",
+      block: white,
+      blockScale: 1.18,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-118-inverted",
+      title: "J. 118% inverted",
+      desc: "Light grid with enlarged dark N blocks. Good contrast, less heavy overall.",
+      bg: paper,
+      ghost: gridLight,
+      block: nearDark,
+      blockScale: 1.18,
+      cells: nCells(4, 4)
+    },
+    {
+      ...base4,
+      id: "scale-118-orange-center",
+      title: "K. 118% orange center",
+      desc: "Mostly monochrome with one enlarged orange square on the diagonal.",
+      bg: dark,
+      ghost: gridDark,
+      block: white,
+      blockScale: 1.18,
+      cells: nCells(4, 4, { accentCells: [[2, 2, orange]] })
+    },
+    {
+      ...base4,
+      id: "scale-118-orange-diagonal",
+      title: "L. 118% orange diagonal",
+      desc: "Scaled monochrome stems with the enlarged diagonal in orange.",
+      bg: dark,
+      ghost: gridDark,
+      block: white,
+      blockScale: 1.18,
+      cells: nCells(4, 4, { diagonal: orange })
+    }
+  ];
+
+  function nCells(cols, rows, options = {}) {
+    const cells = [];
+    const maxCol = cols - 1;
+    const maxRow = rows - 1;
+
+    for (let row = 0; row < rows; row += 1) {
+      cells.push([row, 0]);
+      cells.push([row, maxCol]);
+    }
+
+    for (let row = 1; row < maxRow; row += 1) {
+      const col = Math.round((row / maxRow) * maxCol);
+      if (col > 0 && col < maxCol) {
+        cells.push([row, col, options.diagonal]);
+      }
+    }
+
+    for (const accentCell of options.accentCells || []) {
+      const index = cells.findIndex(([row, col]) => row === accentCell[0] && col === accentCell[1]);
+      if (index >= 0) {
+        cells[index] = accentCell;
+      } else {
+        cells.push(accentCell);
+      }
+    }
+
+    return dedupeCells(cells);
+  }
+
+  function dedupeCells(cells) {
+    const byPosition = new Map();
+    for (const cell of cells) {
+      byPosition.set(`${cell[0]}:${cell[1]}`, cell);
+    }
+    return [...byPosition.values()];
+  }
+
+  function iconSvg(variant, size) {
+    const cellSize = (128 - variant.padding * 2 - variant.gap * (variant.cols - 1)) / variant.cols;
+    const gridHeight = cellSize * variant.rows + variant.gap * (variant.rows - 1);
+    const top = (128 - gridHeight) / 2;
+    const ghostRects = variant.ghost ? allCells(variant.rows, variant.cols).map(([row, col]) => {
+      return rect(row, col, top, cellSize, variant, variant.ghost, 1);
+    }).join("") : "";
+
+    const blocks = variant.cells.map(([row, col, color]) => {
+      return rect(row, col, top, cellSize, variant, color || variant.block, variant.blockScale || 1);
+    }).join("");
+
+    return `
+      <svg width="${size}" height="${size}" viewBox="0 0 128 128" role="img" aria-label="${variant.title}">
+        <rect width="128" height="128" rx="${variant.radius}" fill="${variant.bg}"></rect>
+        ${ghostRects}
+        ${blocks}
+      </svg>
+    `;
+  }
+
+  function rect(row, col, top, cellSize, variant, fill, scale) {
+    const scaledSize = cellSize * scale;
+    const x = variant.padding + col * (cellSize + variant.gap) - (scaledSize - cellSize) / 2;
+    const y = top + row * (cellSize + variant.gap) - (scaledSize - cellSize) / 2;
+    return `<rect x="${round(x)}" y="${round(y)}" width="${round(scaledSize)}" height="${round(scaledSize)}" rx="${variant.blockRadius}" fill="${fill}"></rect>`;
+  }
+
+  function allCells(rows, cols) {
+    const cells = [];
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        cells.push([row, col]);
+      }
+    }
+    return cells;
+  }
+
+  function round(value) {
+    return Math.round(value * 100) / 100;
+  }
+
+  function cardHtml(variant) {
+    const darkSamples = [128, 48, 32, 16].map((size) => slotHtml(variant, size)).join("");
+    const lightSamples = [48, 32, 16].map((size) => slotHtml(variant, size)).join("");
+
+    return `
+      <section class="card">
+        <div class="meta">
+          <h2>${variant.title}</h2>
+          <p>${variant.desc}</p>
+        </div>
+        <div class="sample-row">${darkSamples}</div>
+        <div class="sample-row light">${lightSamples}</div>
+      </section>
+    `;
+  }
+
+  function slotHtml(variant, size) {
+    return `
+      <div class="slot">
+        ${iconSvg(variant, size)}
+        <small>${size}</small>
+      </div>
+    `;
+  }
+
+  document.getElementById("cards").innerHTML = variants.map(cardHtml).join("");
+  document.getElementById("toolbar-icons").innerHTML = variants.map((variant) => {
+    return `<div class="toolbar-slot" title="${variant.title}">${iconSvg(variant, 16)}</div>`;
+  }).join("");
+</script>
+</body>
+</html>

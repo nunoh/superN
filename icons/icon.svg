@@ -1,9 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" shape-rendering="crispEdges">
   <rect width="128" height="128" rx="26" fill="#0a0a0a"/>
-  <path d="M 26 102 L 34 26 L 96 102 L 104 26"
-        fill="none"
-        stroke="#fafaf9"
-        stroke-width="18"
-        stroke-linecap="round"
-        stroke-linejoin="round"/>
+
+  <g fill="#242424">
+    <rect x="24" y="24" width="14.75" height="14.75"/>
+    <rect x="45.75" y="24" width="14.75" height="14.75"/>
+    <rect x="67.5" y="24" width="14.75" height="14.75"/>
+    <rect x="89.25" y="24" width="14.75" height="14.75"/>
+
+    <rect x="24" y="45.75" width="14.75" height="14.75"/>
+    <rect x="45.75" y="45.75" width="14.75" height="14.75"/>
+    <rect x="67.5" y="45.75" width="14.75" height="14.75"/>
+    <rect x="89.25" y="45.75" width="14.75" height="14.75"/>
+
+    <rect x="24" y="67.5" width="14.75" height="14.75"/>
+    <rect x="45.75" y="67.5" width="14.75" height="14.75"/>
+    <rect x="67.5" y="67.5" width="14.75" height="14.75"/>
+    <rect x="89.25" y="67.5" width="14.75" height="14.75"/>
+
+    <rect x="24" y="89.25" width="14.75" height="14.75"/>
+    <rect x="45.75" y="89.25" width="14.75" height="14.75"/>
+    <rect x="67.5" y="89.25" width="14.75" height="14.75"/>
+    <rect x="89.25" y="89.25" width="14.75" height="14.75"/>
+  </g>
+
+  <g fill="#fafaf9">
+    <rect x="22.08" y="22.08" width="18.59" height="18.59"/>
+    <rect x="87.33" y="22.08" width="18.59" height="18.59"/>
+
+    <rect x="22.08" y="43.83" width="18.59" height="18.59"/>
+    <rect x="43.83" y="43.83" width="18.59" height="18.59"/>
+    <rect x="87.33" y="43.83" width="18.59" height="18.59"/>
+
+    <rect x="22.08" y="65.58" width="18.59" height="18.59"/>
+    <rect x="65.58" y="65.58" width="18.59" height="18.59"/>
+    <rect x="87.33" y="65.58" width="18.59" height="18.59"/>
+
+    <rect x="22.08" y="87.33" width="18.59" height="18.59"/>
+    <rect x="87.33" y="87.33" width="18.59" height="18.59"/>
+  </g>
 </svg>
