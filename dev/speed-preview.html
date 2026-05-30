@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>video-speed overlay preview</title>
+<style>
+  body { margin: 0; background: #111; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; }
+  .video-mock { width: 720px; height: 405px; background: #000; position: relative; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #333; font-size: 14px; }
+
+  /* === paste from video-speed.css === */
+  .__supern_speed__ {
+    position: absolute;
+    z-index: 2147483647;
+    background: rgba(0, 0, 0, 0.45);
+    color: rgba(255, 255, 255, 0.85);
+    font: 12px/1 -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 4px 8px;
+    border-radius: 6px;
+    pointer-events: none;
+    user-select: none;
+    top: 8px;
+    left: 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="video-mock">
+    video area
+    <div class="__supern_speed__">1.80x</div>
+  </div>
+</body>
+</html>
