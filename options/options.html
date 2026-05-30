@@ -59,6 +59,10 @@
           />
           <input id="add-start" type="time" aria-label="block window start" />
           <input id="add-end" type="time" aria-label="block window end" />
+          <label class="weekday-toggle" title="apply window on weekdays only">
+            <input id="add-weekdays" type="checkbox" />
+            wkdys
+          </label>
           <select id="add-mode" aria-label="enforcement mode">
             <option value="hard">hard</option>
             <option value="soft">soft</option>
@@ -67,7 +71,9 @@
         </form>
         <p class="hint small">
           window blocks the site during the given range (wraps midnight if end
-          is before start). leave both blank to skip.
+          is before start). leave both blank to skip. <strong>wkdys</strong>
+          applies the window Mon–Fri only — the daily budget still counts every
+          day.
         </p>
       </section>
 

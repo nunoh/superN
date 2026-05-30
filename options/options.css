@@ -152,6 +152,21 @@ select {
   opacity: 0.4;
 }
 
+.weekday-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  font-size: 0.8em;
+  opacity: 0.75;
+  cursor: pointer;
+  user-select: none;
+}
+
+.weekday-toggle input {
+  margin: 0;
+}
+
 .snoozed-list,
 .mono-list {
   list-style: none;

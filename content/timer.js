@@ -45,8 +45,14 @@
     return d.getHours() * 60 + d.getMinutes();
   }
 
+  function isWeekend() {
+    const d = new Date().getDay();
+    return d === 0 || d === 6;
+  }
+
   function inWindow(win) {
     if (!win || !win.start || !win.end) return false;
+    if (win.weekdaysOnly && isWeekend()) return false;
     const now = nowMinutes();
     const s = parseHM(win.start);
     const e = parseHM(win.end);

@@ -4,6 +4,7 @@ const domainInput = document.querySelector("#add-domain");
 const minutesInput = document.querySelector("#add-minutes");
 const startInput = document.querySelector("#add-start");
 const endInput = document.querySelector("#add-end");
+const weekdaysInput = document.querySelector("#add-weekdays");
 const modeInput = document.querySelector("#add-mode");
 const snoozedList = document.querySelector("#snoozed-list");
 
@@ -98,7 +99,14 @@ async function load() {
     const dash = document.createElement("span");
     dash.textContent = "–";
     dash.className = "dash";
-    tdWindow.append(startEl, dash, endEl);
+    const weekdayLabel = document.createElement("label");
+    weekdayLabel.className = "weekday-toggle";
+    weekdayLabel.title = "apply this window on weekdays only";
+    const weekdayEl = document.createElement("input");
+    weekdayEl.type = "checkbox";
+    weekdayEl.checked = !!(entry.blockWindow && entry.blockWindow.weekdaysOnly);
+    weekdayLabel.append(weekdayEl, document.createTextNode("wkdys"));
+    tdWindow.append(startEl, dash, endEl, weekdayLabel);
 
     const tdMode = document.createElement("td");
     const modeEl = document.createElement("select");
@@ -147,10 +155,13 @@ async function load() {
         return;
       }
       if (!isValidHM(s) || !isValidHM(e)) return; // wait for both
-      await updateEntry(entry.domain, { blockWindow: { start: s, end: e } });
+      const win = { start: s, end: e };
+      if (weekdayEl.checked) win.weekdaysOnly = true;
+      await updateEntry(entry.domain, { blockWindow: win });
     };
     startEl.addEventListener("change", onWindowChange);
     endEl.addEventListener("change", onWindowChange);
+    weekdayEl.addEventListener("change", onWindowChange);
 
     modeEl.addEventListener("change", async () => {
       await updateEntry(entry.domain, { mode: modeEl.value });
@@ -190,7 +201,10 @@ form.addEventListener("submit", async (e) => {
 
   const entry = { domain };
   if (minutes) entry.minutes = minutes;
-  if (hasWindow) entry.blockWindow = { start, end };
+  if (hasWindow) {
+    entry.blockWindow = { start, end };
+    if (weekdaysInput.checked) entry.blockWindow.weekdaysOnly = true;
+  }
   if (modeInput.value === "soft") entry.mode = "soft";
 
   list.push(entry);
@@ -200,6 +214,7 @@ form.addEventListener("submit", async (e) => {
   minutesInput.value = "";
   startInput.value = "";
   endInput.value = "";
+  weekdaysInput.checked = false;
   modeInput.value = "hard";
   domainInput.focus();
 });
