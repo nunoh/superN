@@ -2,8 +2,22 @@
 
 ## Unreleased
 
+## 2026-05-30 (v0.9)
+
+### ✨ Features
+- Time-block windows can be limited to weekdays — a **wkdys** toggle per site (and in the add form) makes the block-window apply Mon–Fri only. The daily minute budget still counts every day, so weekends keep the limit but drop the outside-hours block.
+
+### 🔧 Improvements
+- Video-speed overlay is more legible — dark rounded pill behind the rate readout instead of bare text.
+
+## 2026-05-12 (v0.8.1)
+
 ### 🔧 Improvements
 - Time-block daily budgets now reset at 4am local time instead of midnight, so late-night browsing before 4am counts toward the previous day
+- Extension icon updated to the blocky SuperN mark.
+
+### 🏗️ Under the hood
+- Release packaging now builds a stable `supern.xpi` and includes helpers to locate or install the latest local XPI.
 
 ## 2026-05-02 (v0.7)
 
