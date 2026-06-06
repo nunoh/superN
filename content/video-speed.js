@@ -37,8 +37,19 @@
       const next = clamp(mutator(rec.lastSet));
       rec.lastSet = next;
       video.playbackRate = next;
-      rec.overlay.textContent = fmt(next);
+      rec.label.textContent = fmt(next);
     }
+  }
+
+  function fullscreenBest() {
+    let best = null, bestArea = 0;
+    for (const video of tracked.keys()) {
+      if (!video.isConnected) continue;
+      const r = video.getBoundingClientRect();
+      const area = r.width * r.height;
+      if (area > bestArea) { bestArea = area; best = video; }
+    }
+    if (best) try { best.requestFullscreen(); } catch (_) {}
   }
 
   function seekAll(delta) {
@@ -96,11 +107,26 @@
 
     const overlay = document.createElement("div");
     overlay.className = "__supern_speed__ hidden";
-    overlay.textContent = fmt(video.playbackRate);
+
+    const label = document.createElement("span");
+    label.textContent = fmt(video.playbackRate);
+    overlay.appendChild(label);
+
+    const fsBtn = document.createElement("button");
+    fsBtn.className = "__supern_speed_fs__";
+    fsBtn.textContent = "⛶";
+    fsBtn.title = "Fullscreen (F)";
+    fsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      try { video.requestFullscreen(); } catch (_) {}
+    });
+    overlay.appendChild(fsBtn);
+
     document.body.appendChild(overlay);
 
     const rec = {
       overlay,
+      label,
       lastSet: video.playbackRate,
     };
 
@@ -110,7 +136,7 @@
         video.playbackRate = rec.lastSet;
         return;
       }
-      overlay.textContent = fmt(video.playbackRate);
+      label.textContent = fmt(video.playbackRate);
     };
     video.addEventListener("ratechange", onRateChange);
     rec.detach = () => {
@@ -203,6 +229,10 @@
       } else if (k === "v") {
         e.preventDefault();
         togglePinned();
+      } else if (k === "f") {
+        e.preventDefault();
+        fullscreenBest();
+        reveal(REVEAL_ON_INTERACTION_MS);
       }
     },
     true

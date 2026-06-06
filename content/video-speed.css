@@ -13,3 +13,19 @@
 .__supern_speed__.hidden {
   display: none !important;
 }
+
+.__supern_speed_fs__ {
+  pointer-events: auto;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0 0 5px;
+  margin: 0;
+}
+
+.__supern_speed_fs__:hover {
+  color: rgba(255, 255, 255, 1);
+}

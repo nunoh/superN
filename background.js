@@ -2,7 +2,10 @@
 // page so a dev-reload — or a Firefox suspend/respawn — is visibly verifiable.
 browser.storage.local.set({ __supern_loaded_at: Date.now() });
 
+const IS_CHROME_BUILD = !browser.runtime.getManifest().browser_specific_settings;
+
 browser.runtime.onInstalled.addListener(async ({ reason }) => {
+  if (IS_CHROME_BUILD) await setupSnoozeMenu();
   if (reason !== "install") return;
   const stored = await browser.storage.local.get("blocklist");
   if (!stored.blocklist) {
@@ -42,10 +45,10 @@ browser.tabs.onRemoved.addListener((tabId) => {
   linkBypassTabs.delete(tabId);
 });
 
-browser.runtime.onMessage.addListener((msg, sender) => {
+browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg && msg.type === "supern-bypass-check") {
     const tabId = sender.tab && sender.tab.id;
-    return Promise.resolve(tabId != null && linkBypassTabs.has(tabId));
+    sendResponse(tabId != null && linkBypassTabs.has(tabId));
   }
 });
 
@@ -83,8 +86,13 @@ function isSnoozable(url) {
   return /^https?:|^ftp:|^file:/i.test(url);
 }
 
-(function setupSnoozeMenu() {
+async function setupSnoozeMenu() {
   if (!browser.menus || !browser.menus.create) return;
+  if (browser.menus.removeAll) {
+    try {
+      await browser.menus.removeAll();
+    } catch (_) {}
+  }
   browser.menus.create({
     id: "snooze-parent",
     title: "Snooze tab",
@@ -102,7 +110,9 @@ function isSnoozable(url) {
     title: "Tomorrow (9am)",
     contexts: ["tab"],
   });
-})();
+}
+
+if (!IS_CHROME_BUILD) setupSnoozeMenu();
 
 browser.menus.onClicked.addListener(async (info, tab) => {
   if (!tab) return;
