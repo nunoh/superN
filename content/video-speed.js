@@ -1,5 +1,5 @@
 (function () {
-  const STEP = 0.1;
+  const STEP = 0.05;
   const MIN_RATE = 0.07;
   const MAX_RATE = 16;
   const SEEK_SECONDS = 10;
