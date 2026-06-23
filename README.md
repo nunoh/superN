@@ -15,11 +15,11 @@ reading my tabs and history, fewer shortcuts to reconfigure on a clean install.
 
 | Feature | What it does |
 | --- | --- |
-| **Time-block** | Per-site daily minute budget (reset at 4am local) and/or a daily block window, in hard or soft (10s-delayed "open anyway") mode. Inbound links from other sites bypass the block for that tab. Optional weekdays-only scope for the window. |
 | **Pin / unpin tab** | Toggle pinning on the active tab. |
 | **Move tab hotkeys** | Move the active tab left / right. |
 | **Most recent tab** | Jump to the most recent tab (per-window alternation), or the second-most-recent. |
 | **Snooze tab** | Right-click a tab → *Snooze tab* → "Later today" or "Tomorrow". Survives a browser restart. |
+| **Time-block** | Per-site daily minute budget (reset at 4am local) and/or a daily block window, in hard or soft (10s-delayed "open anyway") mode. Inbound links from other sites bypass the block for that tab. Optional weekdays-only scope for the window. |
 | **Web search navigator** | `j` / `k` to step through Google results, `/` to focus the search box (google.com / .es / .pt). |
 | **Video speed controller** | Overlay + page-level shortcuts on any HTML5 `<video>`. Includes "speed fightback" against sites that reset the rate. |
 | **Doomscroll-o-meter** | A tiny meter on x.com that charges as you scroll fast and decays while you read; at 100% the page locks briefly behind a "take a breath" overlay. |
@@ -40,8 +40,15 @@ Defaults (Mac). Rebind via `about:addons` → ⚙ → *Manage Extension Shortcut
 | Most / second-most recent tab | `Cmd+Shift+1` / `2` |
 | Reload extension (dev) | `Ctrl+Shift+R` |
 
-Video-speed shortcuts (while hovering a video): `S` / `D` slower / faster,
-`Z` / `X` seek ±10s, `R` toggle preferred speed, `F` fullscreen, `V` hide overlay.
+Video-speed shortcuts (while hovering a video):
+
+| Key | Action |
+| --- | --- |
+| `S` / `D` | Slower / faster |
+| `Z` / `X` | Seek −10s / +10s |
+| `R` | Toggle preferred speed |
+| `F` | Fullscreen |
+| `V` | Hide overlay |
 
 ## Install
 
