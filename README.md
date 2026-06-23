@@ -7,6 +7,11 @@ It started as a LeechBlock-style time-block and grew to cover the other tiny
 browser tweaks I used to install one extension at a time — fewer third parties
 reading my tabs and history, fewer shortcuts to reconfigure on a clean install.
 
+Inspired by [levelsio/superlevels](https://github.com/levelsio/superlevels), an
+open-source Chrome extension built on the same idea — one auditable codebase in
+place of a pile of single-purpose add-ons. SuperN is a separate, Firefox-first
+take with its own feature set.
+
 > Personal project, shared in case it's useful. It targets Firefox (Gecko, the
 > `browser.*` WebExtension APIs); an experimental Chrome build exists but is not
 > the primary target.
