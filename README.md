@@ -1,20 +1,14 @@
 # SuperN
 
-One small **Firefox** extension (Manifest V3) that replaces a handful of
-single-purpose add-ons with one minimal, dependency-free codebase.
+One small, dependency-free **Firefox** extension (Manifest V3) that replaces a
+pile of single-purpose add-ons with one auditable codebase — fewer third parties
+reading my tabs, fewer shortcuts to reconfigure on a clean install.
 
-It started as a LeechBlock-style time-block and grew to cover the other tiny
-browser tweaks I used to install one extension at a time — fewer third parties
-reading my tabs and history, fewer shortcuts to reconfigure on a clean install.
+Inspired by [levelsio/superlevels](https://github.com/levelsio/superlevels); a
+separate, Firefox-first take with its own feature set.
 
-Inspired by [levelsio/superlevels](https://github.com/levelsio/superlevels), an
-open-source Chrome extension built on the same idea — one auditable codebase in
-place of a pile of single-purpose add-ons. SuperN is a separate, Firefox-first
-take with its own feature set.
-
-> Personal project, shared in case it's useful. It targets Firefox (Gecko, the
-> `browser.*` WebExtension APIs); an experimental Chrome build exists but is not
-> the primary target.
+> Personal project, shared in case it's useful. An experimental Chrome build
+> exists but Firefox is the primary target.
 
 ## Features
 
