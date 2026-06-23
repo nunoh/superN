@@ -261,10 +261,13 @@ async function loadSnoozed() {
     const main = document.createElement("div");
     main.className = "snoozed-main";
 
-    const title = document.createElement("div");
+    const title = document.createElement("a");
     title.className = "snoozed-title";
     title.textContent = entry.title || entry.url;
     title.title = entry.url;
+    title.href = entry.url;
+    title.target = "_blank";
+    title.rel = "noreferrer";
 
     const meta = document.createElement("div");
     meta.className = "snoozed-meta";
