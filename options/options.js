@@ -241,6 +241,21 @@ function fmtWakeAt(ts) {
   return d.toLocaleDateString([], { month: "short", day: "numeric" }) + " " + time;
 }
 
+async function openSnoozedUrl(url) {
+  try {
+    if (!["http:", "https:", "ftp:", "file:"].includes(new URL(url).protocol)) {
+      return;
+    }
+  } catch (_) {
+    return;
+  }
+  try {
+    await browser.tabs.create({ url, active: true });
+  } catch (_) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
 async function loadSnoozed() {
   if (!snoozedList) return;
   const { [SNOOZED_KEY]: list = [] } = await browser.storage.local.get(
@@ -267,7 +282,11 @@ async function loadSnoozed() {
     title.title = entry.url;
     title.href = entry.url;
     title.target = "_blank";
-    title.rel = "noreferrer";
+    title.rel = "noopener noreferrer";
+    title.addEventListener("click", (e) => {
+      e.preventDefault();
+      openSnoozedUrl(entry.url);
+    });
 
     const meta = document.createElement("div");
     meta.className = "snoozed-meta";

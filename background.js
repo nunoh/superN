@@ -176,6 +176,8 @@ const SNOOZED_KEY = "snoozed";
 const ALARM_PREFIX = "snooze-";
 const SNOOZE_TOMORROW_HOUR = 9;
 const SNOOZE_EVENING_HOUR = 18;
+const wakingSnoozes = new Set();
+let snoozeQueue = Promise.resolve();
 
 function timeAt(hour, dayOffset = 0) {
   const d = new Date();
@@ -195,8 +197,13 @@ function tomorrowWakeAt() {
 }
 
 function isSnoozable(url) {
-  if (!url) return false;
-  return /^https?:|^ftp:|^file:/i.test(url);
+  try {
+    return ["http:", "https:", "ftp:", "file:"].includes(
+      new URL(url).protocol
+    );
+  } catch (_) {
+    return false;
+  }
 }
 
 async function setupSnoozeMenu() {
@@ -238,6 +245,7 @@ browser.menus.onClicked.addListener(async (info, tab) => {
 });
 
 async function snoozeTab(tab, wakeAt) {
+  if (tab.incognito) return;
   const id =
     Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
   const entry = {
@@ -246,32 +254,54 @@ async function snoozeTab(tab, wakeAt) {
     title: tab.title || tab.url,
     wakeAt,
   };
-  const { [SNOOZED_KEY]: existing = [] } = await browser.storage.local.get(
-    SNOOZED_KEY
-  );
-  await browser.storage.local.set({
-    [SNOOZED_KEY]: [...existing, entry],
-  });
   await browser.alarms.create(ALARM_PREFIX + id, { when: wakeAt });
+  await mutateSnoozed((list) => [...list, entry]);
   try {
     await browser.tabs.remove(tab.id);
   } catch (_) {
-    // tab may have closed already
+    // Keep the original tab rather than creating an unexpected duplicate wake.
+    try {
+      await browser.alarms.clear(ALARM_PREFIX + id);
+      await mutateSnoozed((list) => list.filter((e) => e.id !== id));
+    } catch (_) {}
   }
 }
 
+function mutateSnoozed(mutator) {
+  const operation = async () => {
+    const { [SNOOZED_KEY]: existing = [] } = await browser.storage.local.get(
+      SNOOZED_KEY
+    );
+    const next = mutator(existing);
+    await browser.storage.local.set({ [SNOOZED_KEY]: next });
+    return next;
+  };
+  const next = snoozeQueue.then(operation, operation);
+  snoozeQueue = next.catch(() => {});
+  return next;
+}
+
 async function wake(entry) {
+  if (wakingSnoozes.has(entry.id)) return;
+  wakingSnoozes.add(entry.id);
   try {
     await browser.tabs.create({ url: entry.url, active: true });
   } catch (_) {
-    // fall through — still drop from list
+    // Keep the item visible and retry later. Dropping it here silently loses a
+    // user's tab when the browser temporarily refuses to open it.
+    try {
+      await browser.alarms.create(ALARM_PREFIX + entry.id, {
+        when: Date.now() + 5 * 60 * 1000,
+      });
+    } catch (_) {}
+    wakingSnoozes.delete(entry.id);
+    return;
   }
-  const { [SNOOZED_KEY]: list = [] } = await browser.storage.local.get(
-    SNOOZED_KEY
-  );
-  await browser.storage.local.set({
-    [SNOOZED_KEY]: list.filter((e) => e.id !== entry.id),
-  });
+  try {
+    await mutateSnoozed((list) => list.filter((e) => e.id !== entry.id));
+  } finally {
+    wakingSnoozes.delete(entry.id);
+  }
 }
 
 browser.alarms.onAlarm.addListener(async (alarm) => {
