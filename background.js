@@ -1,6 +1,12 @@
+const IS_PRIVATE_CONTEXT = Boolean(
+  browser.extension && browser.extension.inIncognitoContext
+);
+
 // Stamp the moment this background page (re)spawned. Surfaced in the settings
 // page so a dev-reload — or a Firefox suspend/respawn — is visibly verifiable.
-browser.storage.local.set({ __supern_loaded_at: Date.now() });
+if (!IS_PRIVATE_CONTEXT) {
+  browser.storage.local.set({ __supern_loaded_at: Date.now() });
+}
 
 const IS_CHROME_BUILD = !browser.runtime.getManifest().browser_specific_settings;
 
@@ -73,15 +79,21 @@ async function consumeLinkBypass(tabId, url) {
   try {
     const tabs = await browser.tabs.query({});
     for (const tab of tabs) {
-      if (!tab.url) continue;
+      if (!tab.url || tab.incognito) continue;
       lastCommittedHost.set(tab.id, new URL(tab.url).hostname);
     }
   } catch (_) {}
 })();
 
 if (browser.webNavigation && browser.webNavigation.onCommitted) {
-  browser.webNavigation.onCommitted.addListener((details) => {
+  browser.webNavigation.onCommitted.addListener(async (details) => {
     if (details.frameId !== 0) return;
+    try {
+      const tab = await browser.tabs.get(details.tabId);
+      if (tab.incognito) return;
+    } catch (_) {
+      return;
+    }
     let host;
     try {
       host = new URL(details.url).hostname;

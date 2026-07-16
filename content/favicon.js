@@ -7,6 +7,11 @@
   const ours = new Set(); // data URIs we produced — skip on observer fire-back
   const inFlight = new WeakMap();
 
+  // Favicon conversion issues a network request; leave private pages entirely
+  // untouched rather than creating any private-browsing activity outside the
+  // browser's normal favicon handling.
+  if (browser.extension && browser.extension.inIncognitoContext) return;
+
   function hostMatches(entryDomain, host) {
     return host === entryDomain || host.endsWith("." + entryDomain);
   }
