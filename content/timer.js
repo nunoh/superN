@@ -98,7 +98,9 @@
 
   const host = location.hostname;
   const state = await readState();
-  const entry = state.blocklist.find((e) => hostMatches(e.domain, host));
+  const entry = state.blocklist
+    .filter((e) => hostMatches(e.domain, host))
+    .sort((a, b) => b.domain.length - a.domain.length)[0];
   if (!entry) return;
 
   let sessionBypass = false;

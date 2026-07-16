@@ -32,16 +32,22 @@ function fmtUsed(sec) {
 }
 
 function normalizeDomain(raw) {
-  return raw
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\//, "")
-    .replace(/^www\./, "")
-    .replace(/\/.*$/, "");
+  const value = raw.trim();
+  if (!value) return "";
+  try {
+    const url = new URL(
+      /^[a-z][a-z\d+.-]*:\/\//i.test(value) ? value : "https://" + value
+    );
+    if (!["http:", "https:"].includes(url.protocol)) return "";
+    return url.hostname.toLowerCase().replace(/^www\./, "");
+  } catch (_) {
+    return "";
+  }
 }
 
 function isValidHM(s) {
-  return /^\d{2}:\d{2}$/.test(s);
+  const match = /^(\d{2}):(\d{2})$/.exec(s);
+  return Boolean(match && Number(match[1]) < 24 && Number(match[2]) < 60);
 }
 
 async function getList() {
@@ -140,7 +146,7 @@ async function load() {
         return;
       }
       const mins = parseInt(raw, 10);
-      if (!mins || mins < 1) {
+      if (!mins || mins < 1 || mins > 1440) {
         minInput.value = entry.minutes || "";
         return;
       }
@@ -181,7 +187,7 @@ form.addEventListener("submit", async (e) => {
 
   const rawMin = minutesInput.value.trim();
   const minutes = rawMin === "" ? null : parseInt(rawMin, 10);
-  if (rawMin !== "" && (!minutes || minutes < 1)) return;
+  if (rawMin !== "" && (!minutes || minutes < 1 || minutes > 1440)) return;
 
   const start = startInput.value;
   const end = endInput.value;
@@ -342,8 +348,7 @@ setInterval(() => {
 }, 1000);
 
 function prettyShortcut(s) {
-  // On Mac, "MacCtrl" is the actual Control key — display as "Ctrl" since this
-  // page is only ever shown on Mac.
+  // On Mac, "MacCtrl" is the actual Control key; show its familiar label.
   return s.replace(/\bMacCtrl\b/g, "Ctrl");
 }
 
