@@ -1,5 +1,6 @@
 (function () {
-  const STEP = 0.05;
+  const STEP = 0.1;
+  const FINE_STEP = 0.05;
   const MIN_RATE = 0.07;
   const MAX_RATE = 16;
   const SEEK_SECONDS = 10;
@@ -12,6 +13,8 @@
   let preferred = DEFAULT_PREFERRED;
   let pinned = false;
   let hideTimer = null;
+  let activeVideo = null;
+  let positionFrame = null;
 
   browser.storage.local.get(PREFERRED_KEY).then((r) => {
     if (typeof r[PREFERRED_KEY] === "number") preferred = r[PREFERRED_KEY];
@@ -32,8 +35,10 @@
     return Math.max(MIN_RATE, Math.min(MAX_RATE, r));
   }
 
-  function setRateAll(mutator) {
-    for (const [video, rec] of tracked) {
+  function setRate(videos, mutator) {
+    for (const video of videos) {
+      const rec = tracked.get(video);
+      if (!rec) continue;
       const next = clamp(mutator(rec.lastSet));
       rec.lastSet = next;
       video.playbackRate = next;
@@ -41,19 +46,12 @@
     }
   }
 
-  function fullscreenBest() {
-    let best = null, bestArea = 0;
-    for (const video of tracked.keys()) {
-      if (!video.isConnected) continue;
-      const r = video.getBoundingClientRect();
-      const area = r.width * r.height;
-      if (area > bestArea) { bestArea = area; best = video; }
-    }
-    if (best) try { best.requestFullscreen(); } catch (_) {}
+  function fullscreen(video) {
+    if (video) try { video.requestFullscreen(); } catch (_) {}
   }
 
-  function seekAll(delta) {
-    for (const video of tracked.keys()) {
+  function seek(videos, delta) {
+    for (const video of videos) {
       try {
         video.currentTime = Math.max(0, video.currentTime + delta);
       } catch (_) {}
@@ -104,6 +102,7 @@
   function attach(video) {
     if (tracked.has(video)) return;
     if (isThumbnailPreview(video)) return;
+    if (!document.body) return;
 
     const overlay = document.createElement("div");
     overlay.className = "__supern_speed__ hidden";
@@ -118,7 +117,8 @@
     fsBtn.title = "Fullscreen (F)";
     fsBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      try { video.requestFullscreen(); } catch (_) {}
+      activeVideo = video;
+      fullscreen(video);
     });
     overlay.appendChild(fsBtn);
 
@@ -141,12 +141,26 @@
     video.addEventListener("ratechange", onRateChange);
     rec.detach = () => {
       video.removeEventListener("ratechange", onRateChange);
+      video.removeEventListener("pointerenter", onPointerEnter);
+      video.removeEventListener("pointerdown", onPointerEnter);
+      rec.resizeObserver.disconnect();
       overlay.remove();
     };
+
+    const onPointerEnter = () => {
+      activeVideo = video;
+      reveal(REVEAL_ON_INTERACTION_MS);
+      schedulePositioning();
+    };
+    video.addEventListener("pointerenter", onPointerEnter);
+    video.addEventListener("pointerdown", onPointerEnter);
+    rec.resizeObserver = new ResizeObserver(schedulePositioning);
+    rec.resizeObserver.observe(video);
 
     tracked.set(video, rec);
     if (pinned) overlay.classList.remove("hidden");
     else reveal(REVEAL_ON_ATTACH_MS);
+    schedulePositioning();
   }
 
   function detach(video) {
@@ -154,9 +168,11 @@
     if (!rec) return;
     rec.detach();
     tracked.delete(video);
+    if (activeVideo === video) activeVideo = null;
   }
 
   function positionOverlays() {
+    positionFrame = null;
     for (const [video, rec] of tracked) {
       if (!video.isConnected) {
         detach(video);
@@ -171,9 +187,22 @@
       rec.overlay.style.top = rect.top + 8 + "px";
       rec.overlay.style.left = rect.left + 8 + "px";
     }
-    requestAnimationFrame(positionOverlays);
   }
-  requestAnimationFrame(positionOverlays);
+
+  function schedulePositioning() {
+    if (
+      positionFrame ||
+      tracked.size === 0 ||
+      document.visibilityState !== "visible"
+    ) {
+      return;
+    }
+    positionFrame = requestAnimationFrame(positionOverlays);
+  }
+
+  window.addEventListener("scroll", schedulePositioning, { passive: true, capture: true });
+  window.addEventListener("resize", schedulePositioning, { passive: true });
+  document.addEventListener("visibilitychange", schedulePositioning);
 
   function discover(root) {
     if (root.nodeType !== 1 && root.nodeType !== 9) return;
@@ -191,6 +220,14 @@
   mo.observe(document.documentElement, { childList: true, subtree: true });
   discover(document);
 
+  function activeTrackedVideo() {
+    if (!activeVideo || !tracked.has(activeVideo) || !activeVideo.isConnected) {
+      return null;
+    }
+    const rect = activeVideo.getBoundingClientRect();
+    return rect.width >= 40 && rect.height >= 40 ? activeVideo : null;
+  }
+
   function inEditable(target) {
     if (!target) return false;
     const tag = target.tagName;
@@ -203,35 +240,36 @@
     (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (inEditable(e.target)) return;
-      if (tracked.size === 0) return;
+      const video = activeTrackedVideo();
+      if (!video) return;
 
       const k = e.key.toLowerCase();
       if (k === "s") {
         e.preventDefault();
-        setRateAll((r) => r - STEP);
+        setRate([video], (r) => r - (e.shiftKey ? FINE_STEP : STEP));
         reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "d") {
         e.preventDefault();
-        setRateAll((r) => r + STEP);
+        setRate([video], (r) => r + (e.shiftKey ? FINE_STEP : STEP));
         reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "z") {
         e.preventDefault();
-        seekAll(-SEEK_SECONDS);
+        seek([video], -SEEK_SECONDS);
         reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "x") {
         e.preventDefault();
-        seekAll(SEEK_SECONDS);
+        seek([video], SEEK_SECONDS);
         reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "r") {
         e.preventDefault();
-        setRateAll((r) => (Math.abs(r - preferred) < 0.01 ? 1 : preferred));
+        setRate([video], (r) => (Math.abs(r - preferred) < 0.01 ? 1 : preferred));
         reveal(REVEAL_ON_INTERACTION_MS);
       } else if (k === "v") {
         e.preventDefault();
         togglePinned();
       } else if (k === "f") {
         e.preventDefault();
-        fullscreenBest();
+        fullscreen(video);
         reveal(REVEAL_ON_INTERACTION_MS);
       }
     },

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Video speed controller: `Shift+S` / `Shift+D` now adjust speed in 0.05x increments; plain `S` / `D` use 0.1x steps.
+
 ## 2026-05-30 (v0.9)
 
 ### ✨ Features

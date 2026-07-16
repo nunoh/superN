@@ -39,7 +39,7 @@ Defaults (Mac). Rebind via `about:addons` → ⚙ → *Manage Extension Shortcut
 | Most / second-most recent tab | `Cmd+Shift+1` / `2`         |
 | Reload extension (dev)        | `Ctrl+Shift+R`              |
 
-Video-speed shortcuts (when the active page has a playable video):
+Video-speed shortcuts (while hovering a playable video):
 
 | Key       | Action                 |
 |-----------|------------------------|
