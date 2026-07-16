@@ -27,30 +27,143 @@ browser.action.onClicked.addListener(() => {
 // script reads via message. Typed / bookmarked / reloaded navs do not.
 // ---------------------------------------------------------------------------
 
-const linkBypassTabs = new Set();
+const LINK_BYPASS_STORE_KEY = "__supern_link_bypass_tabs";
 const LINK_TRANSITIONS = new Set(["link", "form_submit"]);
+const lastCommittedHost = new Map();
+
+function sessionStore() {
+  // Firefox 121+ and Chromium 123+ provide session storage. Keep navigation
+  // state there so an MV3 worker restart cannot silently lose a just-recorded
+  // bypass, while never writing it to disk.
+  return browser.storage.session;
+}
+
+async function setLinkBypass(tabId, url) {
+  const store = sessionStore();
+  const { [LINK_BYPASS_STORE_KEY]: pending = {} } = await store.get(
+    LINK_BYPASS_STORE_KEY
+  );
+  pending[tabId] = { url, expiresAt: Date.now() + 30_000 };
+  await store.set({ [LINK_BYPASS_STORE_KEY]: pending });
+}
+
+async function clearLinkBypass(tabId) {
+  const store = sessionStore();
+  const { [LINK_BYPASS_STORE_KEY]: pending = {} } = await store.get(
+    LINK_BYPASS_STORE_KEY
+  );
+  if (!(tabId in pending)) return;
+  delete pending[tabId];
+  await store.set({ [LINK_BYPASS_STORE_KEY]: pending });
+}
+
+async function consumeLinkBypass(tabId, url) {
+  const store = sessionStore();
+  const { [LINK_BYPASS_STORE_KEY]: pending = {} } = await store.get(
+    LINK_BYPASS_STORE_KEY
+  );
+  const bypass = pending[tabId];
+  if (!bypass) return false;
+  delete pending[tabId];
+  await store.set({ [LINK_BYPASS_STORE_KEY]: pending });
+  return bypass.expiresAt > Date.now() && bypass.url === url;
+}
+
+(async () => {
+  try {
+    const tabs = await browser.tabs.query({});
+    for (const tab of tabs) {
+      if (!tab.url) continue;
+      lastCommittedHost.set(tab.id, new URL(tab.url).hostname);
+    }
+  } catch (_) {}
+})();
 
 if (browser.webNavigation && browser.webNavigation.onCommitted) {
   browser.webNavigation.onCommitted.addListener((details) => {
     if (details.frameId !== 0) return;
-    if (LINK_TRANSITIONS.has(details.transitionType)) {
-      linkBypassTabs.add(details.tabId);
+    let host;
+    try {
+      host = new URL(details.url).hostname;
+    } catch (_) {
+      return;
+    }
+    const previousHost = lastCommittedHost.get(details.tabId);
+    lastCommittedHost.set(details.tabId, host);
+    if (
+      previousHost &&
+      previousHost !== host &&
+      LINK_TRANSITIONS.has(details.transitionType)
+    ) {
+      setLinkBypass(details.tabId, details.url).catch(() => {});
     } else {
-      linkBypassTabs.delete(details.tabId);
+      clearLinkBypass(details.tabId).catch(() => {});
     }
   });
 }
 
 browser.tabs.onRemoved.addListener((tabId) => {
-  linkBypassTabs.delete(tabId);
+  lastCommittedHost.delete(tabId);
+  clearLinkBypass(tabId).catch(() => {});
 });
 
-browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+browser.runtime.onMessage.addListener(async (msg, sender) => {
   if (msg && msg.type === "supern-bypass-check") {
     const tabId = sender.tab && sender.tab.id;
-    sendResponse(tabId != null && linkBypassTabs.has(tabId));
+    if (tabId == null || !sender.tab.url) return false;
+    try {
+      return await consumeLinkBypass(tabId, sender.tab.url);
+    } catch (_) {
+      return false;
+    }
+  }
+  if (msg && msg.type === "supern-usage-add") {
+    const seconds = Number(msg.seconds);
+    const domain = String(msg.domain || "");
+    if (!domain || !Number.isFinite(seconds) || seconds <= 0 || seconds > 60) {
+      return null;
+    }
+    return addUsage(domain, seconds);
   }
 });
+
+// ---------------------------------------------------------------------------
+// Time-block usage accounting. Content scripts report elapsed focused time;
+// this single background queue serializes their read-modify-write updates so
+// usage from different tabs cannot overwrite each other.
+// ---------------------------------------------------------------------------
+
+const RESET_HOUR = 4;
+let usageQueue = Promise.resolve();
+
+function usageDayStr() {
+  const d = new Date();
+  d.setHours(d.getHours() - RESET_HOUR);
+  return (
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0")
+  );
+}
+
+function addUsage(domain, seconds) {
+  const operation = async () => {
+    const { usage = {}, resetDate = "" } = await browser.storage.local.get([
+      "usage",
+      "resetDate",
+    ]);
+    const currentUsage = resetDate === usageDayStr() ? usage : {};
+    const nextUsage = Object.assign({}, currentUsage);
+    nextUsage[domain] = (nextUsage[domain] || 0) + seconds;
+    await browser.storage.local.set({ usage: nextUsage, resetDate: usageDayStr() });
+    return nextUsage[domain];
+  };
+  const next = usageQueue.then(operation, operation);
+  usageQueue = next.catch(() => {});
+  return next;
+}
 
 // ---------------------------------------------------------------------------
 // Snooze tab.

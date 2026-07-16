@@ -1,6 +1,13 @@
 (async function () {
   const BYPASS_KEY = "__supern_bypass__";
   const RESET_HOUR = 4;
+  const isPrivate = Boolean(
+    browser.extension && browser.extension.inIncognitoContext
+  );
+
+  // Time-block state includes browsing activity. Do not read or persist it in
+  // private windows, where extension data must remain private.
+  if (isPrivate) return;
 
   function usageDayStr() {
     const d = new Date();
@@ -83,17 +90,9 @@
       "resetDate",
     ]);
     const usageDay = usageDayStr();
-    if (stored.resetDate !== usageDay) {
-      stored.usage = {};
-      stored.resetDate = usageDay;
-      await browser.storage.local.set({
-        usage: stored.usage,
-        resetDate: stored.resetDate,
-      });
-    }
     return {
       blocklist: stored.blocklist || [],
-      usage: stored.usage || {},
+      usage: stored.resetDate === usageDay ? stored.usage || {} : {},
     };
   }
 
@@ -262,20 +261,39 @@
     if (!bypassed) {
       const reasons = blockReasons(entry, usedSec);
       if (reasons.length) {
-        persist(true).finally(() => showBlocked(reasons));
+        persist(true)
+          .then(() => persist(true))
+          .finally(() => showBlocked(reasons));
       }
     }
   }, 1000);
 
+  let persistInFlight = null;
+
   async function persist(force) {
     if (!force && dirtySec < 5) return;
+    if (persistInFlight) return persistInFlight;
     const adding = dirtySec;
+    if (adding <= 0) return;
     dirtySec = 0;
-    const cur = await readState();
-    const newUsage = Object.assign({}, cur.usage);
-    newUsage[entry.domain] = (newUsage[entry.domain] || 0) + adding;
-    await browser.storage.local.set({ usage: newUsage });
-    usedSec = newUsage[entry.domain];
+    persistInFlight = browser.runtime
+      .sendMessage({
+        type: "supern-usage-add",
+        domain: entry.domain,
+        seconds: adding,
+      })
+      .then((total) => {
+        if (typeof total === "number") usedSec = total;
+      })
+      .catch(() => {
+        // Preserve elapsed time for the next attempt if the event page was
+        // suspended or the tab started navigating.
+        dirtySec += adding;
+      })
+      .finally(() => {
+        persistInFlight = null;
+      });
+    return persistInFlight;
   }
 
   persistHandle = setInterval(() => persist(false), 5000);
@@ -304,14 +322,10 @@
       }
     }
     if (changes.blocklist) {
-      const list = changes.blocklist.newValue || [];
-      const e = list.find((x) => hostMatches(x.domain, host));
-      if (!e) {
-        // Removed from blocklist — tear down overlay.
-        if (overlay) overlay.remove();
-        if (tickHandle) clearInterval(tickHandle);
-        if (persistHandle) clearInterval(persistHandle);
-      }
+      // The current page may be hard-blocked, so updating/removing a rule
+      // cannot safely restore it in place. Reload to apply every rule change
+      // from a fresh, consistent state.
+      location.reload();
     }
   });
 })();
