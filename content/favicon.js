@@ -2,7 +2,10 @@
   const STORE_KEY = "monoFavicons";
   const ICON_SELECTOR =
     'link[rel~="icon" i], link[rel="shortcut icon" i]';
+  const MAX_ICON_BYTES = 2 * 1024 * 1024;
+  const MAX_ICON_PIXELS = 4_000_000;
   const ours = new Set(); // data URIs we produced — skip on observer fire-back
+  const inFlight = new WeakMap();
 
   function hostMatches(entryDomain, host) {
     return host === entryDomain || host.endsWith("." + entryDomain);
@@ -27,11 +30,33 @@
     return;
   }
 
-  async function toMono(url) {
-    const res = await fetch(url, { credentials: "omit", cache: "force-cache" });
+  async function toMono(url, signal) {
+    if (!["http:", "https:"].includes(url.protocol)) {
+      throw new Error("unsupported favicon protocol");
+    }
+    const res = await fetch(url, {
+      credentials: "omit",
+      cache: "force-cache",
+      referrerPolicy: "no-referrer",
+      signal,
+    });
     if (!res.ok) throw new Error("favicon fetch " + res.status);
+    const size = Number(res.headers.get("content-length"));
+    if (Number.isFinite(size) && size > MAX_ICON_BYTES) {
+      throw new Error("favicon too large");
+    }
     const blob = await res.blob();
+    if (
+      blob.size > MAX_ICON_BYTES ||
+      (blob.type && !blob.type.startsWith("image/"))
+    ) {
+      throw new Error("unsupported favicon image");
+    }
     const bmp = await createImageBitmap(blob);
+    if (bmp.width * bmp.height > MAX_ICON_PIXELS) {
+      bmp.close();
+      throw new Error("favicon dimensions too large");
+    }
     const canvas = document.createElement("canvas");
     canvas.width = bmp.width;
     canvas.height = bmp.height;
@@ -44,7 +69,9 @@
       d[i] = d[i + 1] = d[i + 2] = g;
     }
     ctx.putImageData(img, 0, 0);
-    return canvas.toDataURL("image/png");
+    const data = canvas.toDataURL("image/png");
+    bmp.close();
+    return data;
   }
 
   async function processLink(link) {
@@ -52,23 +79,29 @@
     if (!href || ours.has(href)) return;
     let abs;
     try {
-      abs = new URL(href, location.href).href;
+      abs = new URL(href, location.href);
     } catch (_) {
       return;
     }
+    const previous = inFlight.get(link);
+    if (previous) previous.abort();
+    const controller = new AbortController();
+    inFlight.set(link, controller);
     try {
-      const data = await toMono(abs);
+      const data = await toMono(abs, controller.signal);
       ours.add(data);
       // Re-check before write — the page may have swapped the icon meanwhile.
       if (link.getAttribute("href") === href) link.setAttribute("href", data);
     } catch (_) {
       // give up silently; original favicon stays
+    } finally {
+      if (inFlight.get(link) === controller) inFlight.delete(link);
     }
   }
 
   async function injectDefault() {
     try {
-      const data = await toMono("/favicon.ico");
+      const data = await toMono(new URL("/favicon.ico", location.href));
       ours.add(data);
       const link = document.createElement("link");
       link.rel = "icon";
@@ -88,6 +121,10 @@
 
   function watch() {
     processAll();
+    browser.storage.onChanged.addListener((changes, area) => {
+      if (area !== "local" || !changes[STORE_KEY]) return;
+      if (!active(changes[STORE_KEY].newValue || [])) location.reload();
+    });
     const obs = new MutationObserver((muts) => {
       for (const m of muts) {
         if (m.type === "attributes" && m.target.tagName === "LINK") {
