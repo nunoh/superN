@@ -10,6 +10,10 @@
   const LOCK_DURATION_MS = 8000;
   const POST_LOCK_METER = 60;  // meter value after the lock clears
 
+  // Timer's hard/soft block screen owns this document. Do not add a meter to
+  // it when x.com is currently time-blocked.
+  if (document.title.startsWith("blocked —")) return;
+
   let meter = 0;
   let locked = false;
   let lockTimer = null;
@@ -22,6 +26,10 @@
   fill.id = "__supern_doom_fill__";
   bar.appendChild(fill);
   bar.title = "doomscroll-o-meter";
+  bar.setAttribute("role", "progressbar");
+  bar.setAttribute("aria-label", "doomscroll meter");
+  bar.setAttribute("aria-valuemin", "0");
+  bar.setAttribute("aria-valuemax", "100");
 
   function attach() {
     if (!document.body) return;
@@ -54,6 +62,7 @@
   function render() {
     fill.style.width = meter + "%";
     fill.style.background = colorFor(meter);
+    bar.setAttribute("aria-valuenow", String(Math.round(meter)));
     if (meter > 80) {
       bar.classList.add("__supern_doom_warn__");
     } else {
@@ -62,6 +71,11 @@
   }
 
   function tick() {
+    if (document.visibilityState !== "visible") {
+      lastTickMs = Date.now();
+      lastY = window.scrollY || 0;
+      return;
+    }
     const now = Date.now();
     const dt = (now - lastTickMs) / 1000;
     lastTickMs = now;
@@ -93,6 +107,7 @@
   }
 
   let lockOverlay = null;
+  let previousFocus = null;
 
   function blockScrollEvent(e) {
     e.preventDefault();
@@ -116,15 +131,28 @@
 
     lockOverlay = document.createElement("div");
     lockOverlay.id = "__supern_doom_overlay__";
-    lockOverlay.innerHTML =
-      '<div class="__supern_doom_card__">' +
-      '<div class="__supern_doom_title__">take a breath.</div>' +
-      '<div class="__supern_doom_msg__">you were scrolling fast. is this what you came for?</div>' +
-      '<button class="__supern_doom_dismiss__" disabled>dismiss (8s)</button>' +
-      '</div>';
+    lockOverlay.setAttribute("role", "dialog");
+    lockOverlay.setAttribute("aria-modal", "true");
+    lockOverlay.setAttribute("aria-labelledby", "__supern_doom_title__");
+    lockOverlay.tabIndex = -1;
+    const card = document.createElement("div");
+    card.className = "__supern_doom_card__";
+    const title = document.createElement("div");
+    title.id = "__supern_doom_title__";
+    title.className = "__supern_doom_title__";
+    title.textContent = "take a breath.";
+    const msg = document.createElement("div");
+    msg.className = "__supern_doom_msg__";
+    msg.textContent = "you were scrolling fast. is this what you came for?";
+    const btn = document.createElement("button");
+    btn.className = "__supern_doom_dismiss__";
+    btn.disabled = true;
+    card.append(title, msg, btn);
+    lockOverlay.appendChild(card);
+    previousFocus = document.activeElement;
     document.body.appendChild(lockOverlay);
+    lockOverlay.focus({ preventScroll: true });
 
-    const btn = lockOverlay.querySelector(".__supern_doom_dismiss__");
     let secs = Math.floor(LOCK_DURATION_MS / 1000);
     btn.textContent = `dismiss (${secs}s)`;
     const countdown = setInterval(() => {
@@ -152,7 +180,7 @@
   }
 
   function blockKeyScroll(e) {
-    const keys = ["PageDown", "PageUp", "ArrowDown", "ArrowUp", "End", "Home", " ", "Spacebar"];
+    const keys = ["PageDown", "PageUp", "ArrowDown", "ArrowUp", "End", "Home", " ", "Spacebar", "Tab"];
     if (keys.includes(e.key)) {
       e.preventDefault();
       e.stopPropagation();
@@ -172,6 +200,12 @@
       lockOverlay.remove();
       lockOverlay = null;
     }
+    if (previousFocus && previousFocus.isConnected) {
+      try {
+        previousFocus.focus({ preventScroll: true });
+      } catch (_) {}
+    }
+    previousFocus = null;
     meter = POST_LOCK_METER;
     lastY = window.scrollY || 0;
     render();
