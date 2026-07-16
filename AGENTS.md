@@ -13,9 +13,11 @@ There is no compile step, linter, or test suite — source files ship as-is.
 `web-ext` only packages and signs. All commands run via npm:
 
 - `npm run build` — package an unsigned `.xpi` into `web-ext-artifacts/`.
-- `npm run sign` — sign via AMO (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`, channel `unlisted`).
+- `npm run sign` — sign a listed AMO release (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`).
+- `npm run sign:unlisted` — sign an unlisted AMO build.
 - `npm run install-local` — build, then open the newest `.xpi` in Firefox.
 - `npm run release` — sign, then open the signed `.xpi` in Firefox.
+- `npm run package:chrome` — build an uploadable Chrome Web Store ZIP in `dist/`.
 - `npm run cloc` — line count of the shipping source.
 
 For iterating on code, prefer the in-browser **dev-reload** hotkey

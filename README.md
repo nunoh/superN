@@ -29,7 +29,8 @@ See [`SPEC.md`](SPEC.md) for the add-ons each feature replaces, and
 
 ## Keybindings
 
-Defaults (Mac). Rebind via `about:addons` → ⚙ → *Manage Extension Shortcuts*.
+Defaults (Mac). Rebind in Firefox via `about:addons` → ⚙ → *Manage Extension
+Shortcuts*, or in Chrome via `chrome://extensions/shortcuts`.
 
 | Action                        | Binding                     |
 |-------------------------------|-----------------------------|
@@ -73,6 +74,7 @@ npm run build      # → web-ext-artifacts/supern.xpi
 | `npm run install-local` | Build, then open the newest `.xpi` in Firefox.            |
 | `npm run build:chrome`  | Build the Chrome variant into `dist/chrome/`.             |
 | `npm run package:chrome`| Build an uploadable Chrome Web Store ZIP in `dist/`.      |
+| `npm run verify`        | Build both packages and run the Firefox manifest lint.     |
 | `npm run cloc`          | Line count of the shipping source.                        |
 
 ## Architecture
