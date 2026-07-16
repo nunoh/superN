@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SuperN",
   "version": "0.9",
-  "description": "Tiny browser tools. Currently: a daily time-block for distracting sites.",
+  "description": "Private, local browser productivity tools: time blocks, tab actions, video controls, and more.",
   "browser_specific_settings": {
     "gecko": {
       "id": "supern@nh.local",

@@ -1,14 +1,14 @@
 # SuperN
 
-One small, dependency-free **Firefox** extension (Manifest V3) that replaces a
+One small, dependency-free **Firefox and Chromium** extension (Manifest V3) that replaces a
 pile of single-purpose add-ons with one auditable codebase — fewer third parties
 reading my tabs, fewer shortcuts to reconfigure on a clean install.
 
 Inspired by [levelsio/superlevels](https://github.com/levelsio/superlevels); a
 separate, Firefox-first take with its own feature set.
 
-> Personal project, shared in case it's useful. An experimental Chrome build
-> exists but Firefox is the primary target.
+> Personal project, shared in case it's useful. Firefox and Chromium builds
+> ship from the same auditable source tree.
 
 ## Features
 
@@ -39,11 +39,12 @@ Defaults (Mac). Rebind via `about:addons` → ⚙ → *Manage Extension Shortcut
 | Most / second-most recent tab | `Cmd+Shift+1` / `2`         |
 | Reload extension (dev)        | `Ctrl+Shift+R`              |
 
-Video-speed shortcuts (while hovering a video):
+Video-speed shortcuts (when the active page has a playable video):
 
 | Key       | Action                 |
 |-----------|------------------------|
-| `S` / `D` | Slower / faster        |
+| `S` / `D` | Slower / faster by 0.1× |
+| `Shift+S` / `Shift+D` | Slower / faster by 0.05× |
 | `Z` / `X` | Seek −10s / +10s       |
 | `R`       | Toggle preferred speed |
 | `F`       | Fullscreen             |
@@ -57,7 +58,7 @@ There is no compile step — source files ship as-is. [`web-ext`](https://github
 **Try it temporarily** (no signing): open `about:debugging#/runtime/this-firefox`
 → *Load Temporary Add-on…* → pick `manifest.json`.
 
-**Build an `.xpi`:**
+**Build a Firefox `.xpi`:**
 
 ```sh
 npm install        # installs web-ext
@@ -67,9 +68,11 @@ npm run build      # → web-ext-artifacts/supern.xpi
 | Command                 | What it does                                              |
 |-------------------------|-----------------------------------------------------------|
 | `npm run build`         | Package an unsigned `.xpi` into `web-ext-artifacts/`.     |
-| `npm run sign`          | Sign via AMO (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`). |
+| `npm run sign`          | Sign for a listed AMO release (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`). |
+| `npm run sign:unlisted` | Sign an unlisted Firefox build via AMO.                   |
 | `npm run install-local` | Build, then open the newest `.xpi` in Firefox.            |
-| `npm run build:chrome`  | Build the experimental Chrome variant into `dist/`.       |
+| `npm run build:chrome`  | Build the Chrome variant into `dist/chrome/`.             |
+| `npm run package:chrome`| Build an uploadable Chrome Web Store ZIP in `dist/`.      |
 | `npm run cloc`          | Line count of the shipping source.                        |
 
 ## Architecture
@@ -82,6 +85,16 @@ context syncing via `storage.onChanged`) and DOM IDs/classes prefixed `__supern_
 
 For the full layout — where each feature lives, the storage key shapes, and the
 conventions to follow when contributing — see [`AGENTS.md`](AGENTS.md).
+
+## Privacy and permissions
+
+SuperN has no account, analytics, telemetry, remote code, or remote settings
+service. Its settings, daily usage totals, and pending snoozes are stored only
+in the browser. It requests site access so its user-facing tools can work
+there: time blocks, video controls, favicon conversion, and configured
+site-specific features. Monochrome favicon conversion downloads the page's
+public favicon without credentials and processes it locally. See
+[`PRIVACY.md`](PRIVACY.md) for the complete data-handling statement.
 
 ## License
 
