@@ -3,6 +3,9 @@
 ## Unreleased
 
 - Video speed controller: `Shift+S` / `Shift+D` now adjust speed in 0.05x increments; plain `S` / `D` use 0.1x steps.
+- Release hardening: serialized time-block accounting, one-time external-link
+  bypasses, private-window data protection, resilient snoozes, bounded favicon
+  conversion, and an uploadable Chrome package.
 
 ## 2026-05-30 (v0.9)
 
