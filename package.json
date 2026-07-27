@@ -11,12 +11,12 @@
     "verify": "npm run build && npm run package:chrome && web-ext lint --ignore-files package.json package-lock.json node_modules web-ext-artifacts dist scripts background-chrome.js CHANGELOG.md SPEC.md README.md RELEASE.md AGENTS.md CLAUDE.md TODO.md TODO. dev .claude .env icons/preview.html icons/block-n-preview.html",
     "sign": "web-ext sign --channel=listed --api-key=$AMO_JWT_ISSUER --api-secret=$AMO_JWT_SECRET --ignore-files package.json package-lock.json node_modules web-ext-artifacts dist scripts background-chrome.js CHANGELOG.md SPEC.md README.md RELEASE.md AGENTS.md CLAUDE.md TODO.md TODO. dev .claude .env icons/preview.html icons/block-n-preview.html",
     "sign:unlisted": "web-ext sign --channel=unlisted --api-key=$AMO_JWT_ISSUER --api-secret=$AMO_JWT_SECRET --ignore-files package.json package-lock.json node_modules web-ext-artifacts dist scripts background-chrome.js CHANGELOG.md SPEC.md README.md RELEASE.md AGENTS.md CLAUDE.md TODO.md TODO. dev .claude .env icons/preview.html icons/block-n-preview.html",
-    "sign:unlisted:infisical": "infisical run --domain=https://infisical.example --env=prod --path=/supern -- npm run sign:unlisted",
+    "sign:unlisted:infisical": "infisical run --domain=https://infisical.example --env=prod --path=/ -- npm run sign:unlisted",
     "local-xpi": "node scripts/open-local-xpi.mjs --print",
     "install-ext": "node scripts/open-local-xpi.mjs",
     "install-local": "npm run build && npm run install-ext",
     "release": "npm run sign && npm run install-ext",
-    "release:infisical": "infisical run --domain=https://infisical.example --env=prod --path=/supern -- npm run release"
+    "release:infisical": "infisical run --domain=https://infisical.example --env=prod --path=/ -- npm run release"
   },
   "devDependencies": {
     "web-ext": "^8.10.0"

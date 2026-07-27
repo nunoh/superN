@@ -71,7 +71,7 @@ npm run build      # → web-ext-artifacts/supern.xpi
 | `npm run build`         | Package an unsigned `.xpi` into `web-ext-artifacts/`.     |
 | `npm run sign`          | Sign for a listed AMO release (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`). |
 | `npm run sign:unlisted` | Sign an unlisted Firefox build via AMO.                   |
-| `npm run sign:unlisted:infisical` | Sign an unlisted build using the `/supern` Infisical secrets. |
+| `npm run sign:unlisted:infisical` | Sign an unlisted build using the project-root Infisical secrets. |
 | `npm run install-local` | Build, then open the newest `.xpi` in Firefox.            |
 | `npm run build:chrome`  | Build the Chrome variant into `dist/chrome/`.             |
 | `npm run package:chrome`| Build an uploadable Chrome Web Store ZIP in `dist/`.      |
