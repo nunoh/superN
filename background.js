@@ -438,7 +438,9 @@ browser.commands.onCommand.addListener(async (name) => {
       continue;
     }
     const matches = blocklist.some(
-      (e) => host === e.domain || host.endsWith("." + e.domain)
+      (e) =>
+        e.enabled !== false &&
+        (host === e.domain || host.endsWith("." + e.domain))
     );
     if (matches) browser.tabs.reload(tab.id);
   }

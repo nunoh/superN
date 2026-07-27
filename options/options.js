@@ -74,13 +74,29 @@ async function load() {
   tbody.innerHTML = "";
   if (blocklist.length === 0) {
     const tr = document.createElement("tr");
-    tr.innerHTML = '<td colspan="6" class="empty">no sites yet.</td>';
+    tr.innerHTML = '<td colspan="7" class="empty">no sites yet.</td>';
     tbody.appendChild(tr);
     return;
   }
 
   for (const entry of blocklist) {
     const tr = document.createElement("tr");
+    if (entry.enabled === false) tr.classList.add("disabled-rule");
+
+    const tdEnabled = document.createElement("td");
+    tdEnabled.className = "enabled-cell";
+    const enabledLabel = document.createElement("label");
+    enabledLabel.className = "rule-toggle";
+    enabledLabel.title = "enable this time-block rule";
+    const enabledEl = document.createElement("input");
+    enabledEl.type = "checkbox";
+    enabledEl.checked = entry.enabled !== false;
+    enabledEl.setAttribute(
+      "aria-label",
+      "enable " + entry.domain + " time-block rule"
+    );
+    enabledLabel.append(enabledEl);
+    tdEnabled.append(enabledLabel);
 
     const tdDomain = document.createElement("td");
     tdDomain.textContent = entry.domain;
@@ -136,7 +152,7 @@ async function load() {
     removeBtn.className = "remove";
     tdActions.appendChild(removeBtn);
 
-    tr.append(tdDomain, tdMinutes, tdWindow, tdMode, tdUsed, tdActions);
+    tr.append(tdEnabled, tdDomain, tdMinutes, tdWindow, tdMode, tdUsed, tdActions);
     tbody.appendChild(tr);
 
     minInput.addEventListener("change", async () => {
@@ -171,6 +187,14 @@ async function load() {
 
     modeEl.addEventListener("change", async () => {
       await updateEntry(entry.domain, { mode: modeEl.value });
+    });
+
+    enabledEl.addEventListener("change", async () => {
+      await updateEntry(entry.domain, {
+        // Omit the default "enabled" state so existing saved rules remain
+        // compact and backward-compatible.
+        enabled: enabledEl.checked ? undefined : false,
+      });
     });
 
     removeBtn.addEventListener("click", async () => {

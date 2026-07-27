@@ -37,7 +37,7 @@ The two coordination channels between otherwise-independent features are:
 1. **`browser.storage.local`** — the single source of truth for all state.
    Every context (background, content scripts, options page) reads/writes it and
    listens via `browser.storage.onChanged` to stay in sync. Key shapes:
-   - `blocklist` — `[{ domain, minutes?, blockWindow?: {start,end,weekdaysOnly?}, mode?: "hard"|"soft" }]`
+   - `blocklist` — `[{ domain, enabled?, minutes?, blockWindow?: {start,end,weekdaysOnly?}, mode?: "hard"|"soft" }]`
      (`weekdaysOnly` scopes only the window to Mon–Fri; the `minutes` budget still applies every day)
    - `usage` / `resetDate` — per-domain seconds used today; reset at **4am local** (`usageDayStr`)
    - `snoozed` — `[{ id, url, title, wakeAt }]`, mirrored by `browser.alarms` named `snooze-<id>`

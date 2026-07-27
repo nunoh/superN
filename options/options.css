@@ -109,6 +109,24 @@ td.empty {
   padding: 1.5rem;
 }
 
+.enabled-cell {
+  width: 2.25rem;
+  text-align: center;
+}
+
+.rule-toggle {
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.rule-toggle input {
+  margin: 0;
+}
+
+tr.disabled-rule td:not(.enabled-cell) {
+  opacity: 0.5;
+}
+
 input,
 button {
   font: inherit;
