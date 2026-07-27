@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SuperN",
-  "version": "0.9",
+  "version": "0.10.0",
   "description": "Private, local browser productivity tools: time blocks, tab actions, video controls, and more.",
   "browser_specific_settings": {
     "gecko": {

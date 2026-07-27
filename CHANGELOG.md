@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2026-07-27 (v0.10.0)
 
 - Time-block rules can now be paused and re-enabled individually from settings.
 - Video speed controller: `Shift+S` / `Shift+D` now adjust speed in 0.05x increments; plain `S` / `D` use 0.1x steps.

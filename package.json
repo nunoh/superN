@@ -1,6 +1,6 @@
 {
   "name": "supern",
-  "version": "0.9",
+  "version": "0.10.0",
   "private": true,
   "description": "Private, local browser productivity tools: time blocks, tab actions, video controls, and more.",
   "scripts": {
