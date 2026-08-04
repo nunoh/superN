@@ -2,10 +2,12 @@
 
 This file provides guidance to coding agents when working with code in this repository.
 
-SuperN is a personal **Firefox** extension (Manifest V3, `browser.*` WebExtension
-APIs, Gecko-only) that replaces a handful of single-purpose add-ons with one
-minimal codebase. See `SPEC.md` for the feature/replacement table and default
-keybindings; `CHANGELOG.md` tracks releases.
+SuperN is a personal, Firefox-first **Firefox and Chromium** extension (Manifest
+V3) that replaces a handful of single-purpose add-ons with one minimal codebase.
+Firefox uses the Promise-based `browser.*` WebExtension APIs directly; the
+Chromium package includes a small compatibility shim. See `SPEC.md` for the
+feature/replacement table and default keybindings; `CHANGELOG.md` tracks
+releases.
 
 ## Commands
 
@@ -17,7 +19,9 @@ There is no compile step, linter, or test suite — source files ship as-is.
 - `npm run sign:unlisted` — sign an unlisted AMO build.
 - `npm run install-local` — build, then open the newest `.xpi` in Firefox.
 - `npm run release` — sign, then open the signed `.xpi` in Firefox.
+- `npm run build:chrome` — build the unpacked Chromium extension in `dist/chrome/`.
 - `npm run package:chrome` — build an uploadable Chrome Web Store ZIP in `dist/`.
+- `npm run verify` — build both packages and run the Firefox manifest lint.
 - `npm run cloc` — line count of the shipping source.
 
 For iterating on code, prefer the in-browser **dev-reload** hotkey
@@ -52,7 +56,7 @@ The two coordination channels between otherwise-independent features are:
 
 ### Where each feature lives
 
-- `background.js` — the only persistent context. Sections (clearly commented):
+- `background.js` — the only extension background context. Sections (clearly commented):
   link-click bypass (via `webNavigation` transition types, since `referrer` is
   unreliable), snooze (menus + alarms, reconciled on startup), recent-tab jump
   (sorts by native `tab.lastAccessed` on demand — never keeps an in-memory queue,
