@@ -376,6 +376,14 @@ function prettyShortcut(s) {
   return s.replace(/\bMacCtrl\b/g, "Ctrl");
 }
 
+function loadShortcutHelp() {
+  if (location.protocol !== "chrome-extension:") return;
+  const firefoxHelp = document.querySelector("#firefox-shortcut-help");
+  const chromeHelp = document.querySelector("#chrome-shortcut-help");
+  if (firefoxHelp) firefoxHelp.hidden = true;
+  if (chromeHelp) chromeHelp.hidden = false;
+}
+
 async function loadShortcuts() {
   if (!browser.commands || !browser.commands.getAll) return;
   const map = {
@@ -498,6 +506,7 @@ async function loadBuildStamp() {
 
 load();
 loadSnoozed();
+loadShortcutHelp();
 loadShortcuts();
 loadVideoSpeed();
 loadMono();
