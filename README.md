@@ -1,36 +1,70 @@
-# SuperN
+<p align="center">
+  <img src="icons/icon-128.png" width="96" height="96" alt="SuperN">
+</p>
 
-One small, dependency-free **Firefox and Chromium** extension (Manifest V3) that replaces a
-pile of single-purpose add-ons with one auditable codebase — fewer third parties
-reading my tabs, fewer shortcuts to reconfigure on a clean install.
+<h1 align="center">SuperN</h1>
 
-Inspired by [levelsio/superlevels](https://github.com/levelsio/superlevels); a
-separate, Firefox-first take with its own feature set.
+**Like [superlevels](https://github.com/levelsio/superlevels), but it's SuperN.** Firefox-first, its own feature set — 8 single-purpose add-ons replaced by one codebase you can actually read.
 
-> Personal project, shared in case it's useful. Firefox and Chromium builds
-> ship from the same auditable source tree.
+Every extension you install is a program that can read every page you open — and it updates silently, forever, under whoever owns it next. That is a lot of trust to hand to eight different authors just to pin a tab, slow down a video, and stay off x.com. This one has no dependencies, no build step, and no minified blob. You can read all of it in an afternoon, or point an AI at it.
+
+## Audit it before you install it
+
+You should do this for **every** extension you install. Most are closed-source and you can't. This one you can:
+
+1. Clone this repo, or point your AI tool at the source
+2. Use [Claude Code](https://claude.com/claude-code), [Cursor](https://cursor.sh), [Codex](https://openai.com/index/openai-codex/), or anything similar
+3. Ask it: *"Analyze this browser extension for data exfiltration, malware, spyware, and suspicious behavior"*
+4. Read the report before you install
+
+You don't have to take the AI's word for it either. The privacy claims below are three greps:
+
+```sh
+# Every network call in the extension. Exactly one hit: the favicon fetch.
+grep -rnE "fetch\(|XMLHttpRequest|sendBeacon|WebSocket" background.js background-chrome.js browser-api.js content/ options/
+
+# That one fetch, in full: credentials omitted, no referrer, converted locally.
+grep -nA6 "fetch(" content/favicon.js
+
+# No remotely hosted code, ever.
+grep -rnE "import\(|\.src\s*=" background.js background-chrome.js browser-api.js content/ options/
+```
 
 ## Features
 
-| Feature                    | What it does                                                                                                                                                                                                                                |
-|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Pin / unpin tab**        | Toggle pinning on the active tab.                                                                                                                                                                                                           |
-| **Move tab hotkeys**       | Move the active tab left / right.                                                                                                                                                                                                           |
-| **Most recent tab**        | Jump to the most recent tab (per-window alternation), or the second-most-recent.                                                                                                                                                            |
-| **Snooze tab**             | Right-click a tab → *Snooze tab* → "Later today" or "Tomorrow". Survives a browser restart.                                                                                                                                                 |
-| **Web search navigator**   | `j` / `k` to step through Google results, `/` to focus the search box (google.com / .es / .pt).                                                                                                                                             |
-| **Video speed controller** | Overlay + page-level shortcuts on any HTML5 `<video>`. Includes "speed fightback" against sites that reset the rate.                                                                                                                        |
-| **Time-block**             | Per-site daily minute budget (reset at 4am local) and/or a daily block window, in hard or soft (10s-delayed "open anyway") mode. Pause any rule without deleting it; inbound links from other sites bypass the block for that tab. Optional weekdays-only scope for the window. |
-| **Monochrome favicons**    | Per-host allowlist; matching favicons are desaturated to grayscale, re-applied when the page swaps its icon (e.g. Gmail's unread badge).                                                                                                    |
-| **Doomscroll-o-meter**     | A tiny meter on x.com that charges as you scroll fast and decays while you read; at 100% the page locks briefly behind a "take a breath" overlay.                                                                                           |
+### ⏳ Time-block
+Per-site daily minute budget, reset at 4am local time, and/or a daily block window. Hard mode swaps the page for a block screen; soft mode gives you a 10-second-delayed "open anyway" button. Pause any rule without deleting it. Inbound links from other sites bypass the block for that one tab, so a link someone sends you still opens. Windows can be scoped to weekdays only. Replaces [LeechBlock NG](https://addons.mozilla.org/en-US/firefox/addon/leechblock-ng/).
 
-See [`SPEC.md`](SPEC.md) for the add-ons each feature replaces, and
-[`CHANGELOG.md`](CHANGELOG.md) for release history.
+### 🌀 Doomscroll-o-meter
+A tiny meter on x.com that charges as you scroll fast and decays while you actually read. At 100% the page locks for 8 seconds behind a "take a breath" overlay. No equivalent add-on — this one exists because the time-block budget alone didn't fix the behaviour.
+
+### ⚡ Video speed controller
+Overlay plus keyboard shortcuts on any HTML5 `<video>`, scoped to the player you're hovering. Includes "speed fightback" — many sites reset `playbackRate` on seek or ad break, so it reapplies your rate. Replaces [Video Speed Controller](https://addons.mozilla.org/en-US/firefox/addon/videospeed/).
+
+### 😴 Snooze tab
+Right-click any tab → *Snooze tab* → "Later today (6pm)" or "Tomorrow (9am)". The tab closes and reopens at the chosen time. Survives a browser restart; past-due wakes are reconciled on startup. Replaces [Snooze Tabs](https://addons.mozilla.org/en-US/firefox/addon/snooze-tabs-we/).
+
+### 🔍 Web search navigator
+`j` / `k` to step through Google results, `/` to focus the search box. Works on google.com, google.es, and google.pt. Replaces [Web Search Navigator](https://addons.mozilla.org/en-US/firefox/addon/web-search-navigator/).
+
+### 📌 Pin / unpin tab
+Toggle pinning on the active tab with one keystroke. Replaces [Pin Unpin Tab](https://addons.mozilla.org/en-US/firefox/addon/pinunpin-tab/).
+
+### ↔️ Move tab hotkeys
+Move the active tab left or right. Replaces [Move Tab Hotkeys](https://addons.mozilla.org/en-US/firefox/addon/move-tab-hotkeys/).
+
+### 🔁 Most recent tab
+Alternate with your last tab, or jump to the second-most-recent. Sorts by the browser's own `tab.lastAccessed` on demand rather than keeping a queue in memory, so a suspended MV3 service worker can't silently break it. Replaces [Most Recent Tab](https://addons.mozilla.org/en-US/firefox/addon/most-recent-tab/).
+
+### 🎨 Monochrome favicons
+Per-host allowlist. Matching favicons are desaturated to grayscale on a canvas and re-applied whenever the page swaps its icon — so Gmail's unread badge stops shouting at you. Replaces [Favicon Changer](https://addons.mozilla.org/en-US/firefox/addon/favicon-changer/).
+
+### ⌨️ Keyboard reclaim
+Some sites capture `Cmd`/`Ctrl`+digit and steal your tab-switching shortcuts. This blocks the hijack in the capture phase for hosts listed in `manifest.json` (currently rtve.es).
 
 ## Keybindings
 
-Defaults (Mac). Rebind in Firefox via `about:addons` → ⚙ → *Manage Extension
-Shortcuts*, or in Chrome via `chrome://extensions/shortcuts`.
+Defaults, on Mac. Rebind in Firefox at `about:addons` → ⚙ → *Manage Extension Shortcuts*, or in Chrome at `chrome://extensions/shortcuts`.
 
 | Action                        | Binding                     |
 |-------------------------------|-----------------------------|
@@ -40,63 +74,67 @@ Shortcuts*, or in Chrome via `chrome://extensions/shortcuts`.
 | Most / second-most recent tab | `Cmd+Shift+1` / `2`         |
 | Reload extension (dev)        | `Ctrl+Shift+R`              |
 
-Video-speed shortcuts (while hovering a playable video):
+Video shortcuts, while hovering a playable video:
 
-| Key       | Action                 |
-|-----------|------------------------|
-| `S` / `D` | Slower / faster by 0.1× |
-| `Shift+S` / `Shift+D` | Slower / faster by 0.05× |
-| `Z` / `X` | Seek −10s / +10s       |
-| `R`       | Toggle preferred speed |
-| `F`       | Fullscreen             |
-| `V`       | Hide overlay           |
+| Key                   | Action                    |
+|-----------------------|---------------------------|
+| `S` / `D`             | Slower / faster by 0.1×   |
+| `Shift+S` / `Shift+D` | Slower / faster by 0.05×  |
+| `Z` / `X`             | Seek −10s / +10s          |
+| `R`                   | Toggle preferred speed    |
+| `F`                   | Fullscreen                |
+| `V`                   | Hide overlay              |
 
 ## Install
 
-There is no compile step — source files ship as-is. [`web-ext`](https://github.com/mozilla/web-ext)
-(the only dev dependency) just packages and signs.
+There is no compile step and no bundler — the source files ship as-is.
 
-**Try it temporarily** (no signing): open `about:debugging#/runtime/this-firefox`
-→ *Load Temporary Add-on…* → pick `manifest.json`.
+**Firefox, temporarily** (no signing, gone on restart):
 
-**Build a Firefox `.xpi`:**
+1. Clone this repo
+2. Open `about:debugging#/runtime/this-firefox`
+3. Click **Load Temporary Add-on…**
+4. Select `manifest.json`
 
-```sh
-npm install        # installs web-ext
-npm run build      # → web-ext-artifacts/supern.xpi
-```
+**Chrome / Chromium:**
 
-| Command                 | What it does                                              |
-|-------------------------|-----------------------------------------------------------|
-| `npm run build`         | Package an unsigned `.xpi` into `web-ext-artifacts/`.     |
-| `npm run sign`          | Sign for a listed AMO release (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`). |
-| `npm run sign:unlisted` | Sign an unlisted Firefox build via AMO.                   |
-| `npm run install-local` | Build, then open the newest `.xpi` in Firefox.            |
-| `npm run build:chrome`  | Build the Chrome variant into `dist/chrome/`.             |
-| `npm run package:chrome`| Build an uploadable Chrome Web Store ZIP in `dist/`.      |
-| `npm run verify`        | Build both packages and run the Firefox manifest lint.     |
-| `npm run cloc`          | Line count of the shipping source.                        |
+1. Clone this repo
+2. Run `npm install && npm run build:chrome`
+3. Open `chrome://extensions/`
+4. Enable **Developer mode** (top right)
+5. Click **Load unpacked** and select `dist/chrome/`
+6. The SuperN icon appears in your toolbar — you're done
+
+**Firefox, permanently:** Firefox requires signed add-ons, so build an `.xpi` with `npm run build` and sign it through [AMO](https://addons.mozilla.org/developers/).
+
+| Command                  | What it does                                              |
+|--------------------------|-----------------------------------------------------------|
+| `npm run build`          | Package an unsigned `.xpi` into `web-ext-artifacts/`.     |
+| `npm run build:chrome`   | Build the unpacked Chromium extension into `dist/chrome/`. |
+| `npm run package:chrome` | Build an uploadable Chrome Web Store ZIP into `dist/`.     |
+| `npm run sign`           | Sign a listed AMO release (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`). |
+| `npm run sign:unlisted`  | Sign an unlisted AMO build.                               |
+| `npm run install-local`  | Build, then open the newest `.xpi` in Firefox.            |
+| `npm run verify`         | Build both packages and run the Firefox manifest lint.     |
+| `npm run cloc`           | Line count of the shipping source.                        |
+
+[`web-ext`](https://github.com/mozilla/web-ext) is the only dev dependency, and it only packages and signs. There are zero runtime dependencies.
+
+## Privacy
+
+- **No data collection.** Everything stays in `browser.storage.local`: your rules, daily usage totals, favicon allowlist, and pending snoozes.
+- **No analytics, no tracking, no phone-home.** There is no account and no server.
+- **No remotely hosted code.** Nothing is fetched and executed.
+- **The only network request** is the monochrome favicon feature fetching the page's own public favicon — with credentials omitted and no referrer — then converting it locally. Nothing is sent anywhere.
+- **Private windows are excluded.** Time-block activity and snoozes are never recorded from a private window.
+
+Full statement in [`PRIVACY.md`](PRIVACY.md).
 
 ## Architecture
 
-Each feature is **fully self-contained**: there is no shared module layer and no
-bundler, because MV3 content scripts can't `import`. Every content script is an
-IIFE that duplicates the few helpers it needs. The two coordination channels are
-`browser.storage.local` (the single source of truth for all state, with every
-context syncing via `storage.onChanged`) and DOM IDs/classes prefixed `__supern_*`.
+Every feature is fully self-contained. There is no shared module layer and no bundler, because MV3 content scripts can't `import`. Each content script is an IIFE that duplicates the few helpers it needs. Features coordinate through exactly two channels: `browser.storage.local` as the single source of truth, with each context syncing via `storage.onChanged`; and DOM IDs prefixed `__supern_*` so nothing collides with the host page.
 
-For the full layout — where each feature lives, the storage key shapes, and the
-conventions to follow when contributing — see [`AGENTS.md`](AGENTS.md).
-
-## Privacy and permissions
-
-SuperN has no account, analytics, telemetry, remote code, or remote settings
-service. Its settings, daily usage totals, and pending snoozes are stored only
-in the browser. It requests site access so its user-facing tools can work
-there: time blocks, video controls, favicon conversion, and configured
-site-specific features. Monochrome favicon conversion downloads the page's
-public favicon without credentials and processes it locally. See
-[`PRIVACY.md`](PRIVACY.md) for the complete data-handling statement.
+See [`AGENTS.md`](AGENTS.md) for the full layout and storage key shapes, [`SPEC.md`](SPEC.md) for the feature/replacement table, and [`CHANGELOG.md`](CHANGELOG.md) for release history.
 
 ## License
 
