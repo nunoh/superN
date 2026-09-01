@@ -109,6 +109,8 @@ There is no compile step and no bundler — the source files ship as-is.
 
 | Command                  | What it does                                              |
 |--------------------------|-----------------------------------------------------------|
+| `npm run dev`            | Run the extension in a scratch Firefox, reloading on save. |
+| `npm run release`        | Bump, changelog, commit, tag, sign, install, push — the whole release. |
 | `npm run build`          | Package an unsigned `.xpi` into `web-ext-artifacts/`.     |
 | `npm run build:chrome`   | Build the unpacked Chromium extension into `dist/chrome/`. |
 | `npm run package:chrome` | Build an uploadable Chrome Web Store ZIP into `dist/`.     |

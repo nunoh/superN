@@ -18,10 +18,19 @@ There is no compile step, linter, or test suite — source files ship as-is.
 - `npm run sign` — sign a listed AMO release (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`).
 - `npm run sign:unlisted` — sign an unlisted AMO build.
 - `npm run install-local` — build, then open the newest `.xpi` in Firefox.
-- `npm run release` — sign, then open the signed `.xpi` in Firefox.
+- `npm run release [patch|minor|major|x.y.z]` — the whole release in one
+  command: bumps the version in `manifest.json` / `package.json` /
+  `package-lock.json`, stamps the `## Unreleased` CHANGELOG section with the
+  version and date, verifies, commits, tags, signs via Infisical, installs the
+  signed `.xpi`, and pushes. Refuses to run on a dirty tree or without an
+  `## Unreleased` section. Needs `INFISICAL_DOMAIN` in the gitignored `.env` —
+  the domain is kept out of this public repo on purpose.
 - `npm run build:chrome` — build the unpacked Chromium extension in `dist/chrome/`.
 - `npm run package:chrome` — build an uploadable Chrome Web Store ZIP in `dist/`.
 - `npm run verify` — build both packages and run the Firefox manifest lint.
+- `npm run dev` — run the extension in a scratch Firefox profile, reloading it
+  on every save. Prefer the in-browser dev-reload hotkey when working in your
+  real profile.
 - `npm run cloc` — line count of the shipping source.
 
 For iterating on code, prefer the in-browser **dev-reload** hotkey
