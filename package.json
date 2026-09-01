@@ -5,6 +5,7 @@
   "description": "Local-first browser productivity tools: time blocks, tab actions, video controls, and more.",
   "scripts": {
     "cloc": "cloc background.js content options manifest.json",
+    "dev": "web-ext run --ignore-files package.json package-lock.json node_modules web-ext-artifacts dist scripts background-chrome.js CHANGELOG.md SPEC.md README.md RELEASE.md AGENTS.md CLAUDE.md TODO.md TODO. dev .claude .env icons/preview.html icons/block-n-preview.html",
     "build": "web-ext build --overwrite-dest --filename supern.xpi --ignore-files package.json package-lock.json node_modules web-ext-artifacts dist scripts background-chrome.js CHANGELOG.md SPEC.md README.md RELEASE.md AGENTS.md CLAUDE.md TODO.md TODO. dev .claude .env icons/preview.html icons/block-n-preview.html",
     "build:chrome": "node scripts/build-chrome.mjs",
     "package:chrome": "npm run build:chrome && web-ext build --source-dir dist/chrome --artifacts-dir dist --filename supern-chrome.zip --overwrite-dest",
