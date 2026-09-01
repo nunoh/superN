@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-01 (v0.11.0)
+
+### ✨ Features
+- Snooze now applies to a whole multi-tab selection. Select several tabs, right-click one of them, and the menu reads **Snooze N tabs** — every selected tab is snoozed in one go. Right-clicking a tab outside the selection still snoozes only that tab.
+
 ## 2026-07-27 (v0.10.0)
 
 - Time-block rules can now be paused and re-enabled individually from settings.
