@@ -42,7 +42,7 @@ A tiny meter on x.com that charges as you scroll fast and decays while you actua
 Overlay plus keyboard shortcuts on any HTML5 `<video>`, scoped to the player you're hovering. Includes "speed fightback" — many sites reset `playbackRate` on seek or ad break, so it reapplies your rate. Replaces [Video Speed Controller](https://addons.mozilla.org/en-US/firefox/addon/videospeed/).
 
 ### 😴 Snooze tab
-Right-click any tab → *Snooze tab* → "Later today (6pm)" or "Tomorrow (9am)". The tab closes and reopens at the chosen time. Survives a browser restart; past-due wakes are reconciled on startup. Replaces [Snooze Tabs](https://addons.mozilla.org/en-US/firefox/addon/snooze-tabs-we/).
+Right-click any tab → *Snooze tab* → "Later today (6pm)" or "Tomorrow (9am)". The tab closes and reopens at the chosen time. Select several tabs first and the menu says *Snooze N tabs* — the whole selection goes at once. Survives a browser restart; past-due wakes are reconciled on startup. Replaces [Snooze Tabs](https://addons.mozilla.org/en-US/firefox/addon/snooze-tabs-we/).
 
 ### 🔍 Web search navigator
 `j` / `k` to step through Google results, `/` to focus the search box. Works on google.com, google.es, and google.pt. Replaces [Web Search Navigator](https://addons.mozilla.org/en-US/firefox/addon/web-search-navigator/).

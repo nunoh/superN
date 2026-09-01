@@ -178,10 +178,12 @@ function addUsage(domain, seconds) {
 }
 
 // ---------------------------------------------------------------------------
-// Snooze tab.
+// Snooze tab(s).
 // Right-click any tab → "Snooze tab" → choose a wake time. The tab is closed
-// and re-opened at the chosen time. State persists across Firefox restarts via
-// browser.alarms; on startup we reconcile any past-due wakes.
+// and re-opened at the chosen time. If the clicked tab is part of a multi-tab
+// selection, the whole selection is snoozed in one go. State persists across
+// Firefox restarts via browser.alarms; on startup we reconcile any past-due
+// wakes.
 // ---------------------------------------------------------------------------
 
 const SNOOZED_KEY = "snoozed";
@@ -246,37 +248,77 @@ async function setupSnoozeMenu() {
 
 if (!IS_CHROME_BUILD) setupSnoozeMenu();
 
+// Firefox keeps a multi-tab selection alive through a right-click, so reflect
+// the real target count in the menu label. Chromium has no menus.onShown.
+if (browser.menus.onShown && browser.menus.refresh) {
+  browser.menus.onShown.addListener(async (info, tab) => {
+    if (!info.contexts.includes("tab") || !tab) return;
+    const count = (await snoozeTargets(tab)).length;
+    browser.menus.update("snooze-parent", {
+      title: count > 1 ? `Snooze ${count} tabs` : "Snooze tab",
+    });
+    browser.menus.refresh();
+  });
+}
+
+// The tabs a snooze click applies to: the whole highlighted selection when the
+// clicked tab belongs to it, otherwise just the clicked tab.
+async function snoozeTargets(tab) {
+  try {
+    const selected = await browser.tabs.query({
+      highlighted: true,
+      windowId: tab.windowId,
+    });
+    if (selected.length > 1 && selected.some((t) => t.id === tab.id)) {
+      return selected;
+    }
+  } catch (_) {}
+  return [tab];
+}
+
 browser.menus.onClicked.addListener(async (info, tab) => {
   if (!tab) return;
   let wakeAt;
   if (info.menuItemId === "snooze-evening") wakeAt = eveningWakeAt();
   else if (info.menuItemId === "snooze-tomorrow") wakeAt = tomorrowWakeAt();
   else return;
-  if (!isSnoozable(tab.url)) return;
-  await snoozeTab(tab, wakeAt);
+  await snoozeTabs(await snoozeTargets(tab), wakeAt);
 });
 
-async function snoozeTab(tab, wakeAt) {
-  if (tab.incognito) return;
-  const id =
-    Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
-  const entry = {
-    id,
-    url: tab.url,
-    title: tab.title || tab.url,
-    wakeAt,
-  };
-  await browser.alarms.create(ALARM_PREFIX + id, { when: wakeAt });
-  await mutateSnoozed((list) => [...list, entry]);
-  try {
-    await browser.tabs.remove(tab.id);
-  } catch (_) {
-    // Keep the original tab rather than creating an unexpected duplicate wake.
-    try {
-      await browser.alarms.clear(ALARM_PREFIX + id);
-      await mutateSnoozed((list) => list.filter((e) => e.id !== id));
-    } catch (_) {}
+async function snoozeTabs(tabs, wakeAt) {
+  const entries = [];
+  for (const tab of tabs) {
+    if (tab.incognito || !isSnoozable(tab.url)) continue;
+    const id =
+      Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+    entries.push({
+      tabId: tab.id,
+      entry: { id, url: tab.url, title: tab.title || tab.url, wakeAt },
+    });
   }
+  if (entries.length === 0) return;
+
+  for (const { entry } of entries) {
+    await browser.alarms.create(ALARM_PREFIX + entry.id, { when: wakeAt });
+  }
+  await mutateSnoozed((list) => [...list, ...entries.map((e) => e.entry)]);
+
+  // Close one at a time so a single stubborn tab only rolls back its own entry
+  // rather than the rest of the selection.
+  const failed = [];
+  for (const { tabId, entry } of entries) {
+    try {
+      await browser.tabs.remove(tabId);
+    } catch (_) {
+      failed.push(entry.id);
+    }
+  }
+  if (failed.length === 0) return;
+  // Keep the original tabs rather than creating unexpected duplicate wakes.
+  try {
+    for (const id of failed) await browser.alarms.clear(ALARM_PREFIX + id);
+    await mutateSnoozed((list) => list.filter((e) => !failed.includes(e.id)));
+  } catch (_) {}
 }
 
 function mutateSnoozed(mutator) {
