@@ -6,3 +6,4 @@ dist/
 .amo-upload-uuid
 .infisical.json
 .env
+.dev-profile/

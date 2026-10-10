@@ -17,7 +17,13 @@ There is no compile step, linter, or test suite — source files ship as-is.
 - `npm run build` — package an unsigned `.xpi` into `web-ext-artifacts/`.
 - `npm run sign` — sign a listed AMO release (needs `AMO_JWT_ISSUER` / `AMO_JWT_SECRET`).
 - `npm run sign:unlisted` — sign an unlisted AMO build.
-- `npm run install-local` — build, then open the newest `.xpi` in Firefox.
+- `npm run install-local` — build, then open the newest **signed** `.xpi` in
+  Firefox. It cannot carry uncommitted changes into release-channel Firefox,
+  which refuses unsigned add-ons: the install prompt appears, the old signed
+  build is reinstalled, and the options page shows a fresh "loaded" timestamp,
+  so a stale install looks exactly like a successful one. The script warns when
+  the local build is newer. `npm run install-local:unsigned` forces the local
+  build (only useful in Developer Edition / Nightly).
 - `npm run release [patch|minor|major|x.y.z]` — the whole release in one
   command: bumps the version in `manifest.json` / `package.json` /
   `package-lock.json`, stamps the `## Unreleased` CHANGELOG section with the
@@ -28,10 +34,12 @@ There is no compile step, linter, or test suite — source files ship as-is.
 - `npm run build:chrome` — build the unpacked Chromium extension in `dist/chrome/`.
 - `npm run package:chrome` — build an uploadable Chrome Web Store ZIP in `dist/`.
 - `npm run verify` — build both packages and run the Firefox manifest lint.
-- `npm run dev` — run the extension in a scratch Firefox profile, reloading it
-  on every save. Prefer the in-browser dev-reload hotkey when working in your
-  real profile.
-- `npm run cloc` — line count of the shipping source.
+- `npm run dev` — **the way to test uncommitted changes.** Runs the extension in
+  a persistent dev profile (`.dev-profile/`, gitignored) and reloads it on every
+  save. The profile persists, so a YouTube login or extension settings survive
+  between runs. `about:debugging` -> "Load Temporary Add-on" -> `manifest.json`
+  is the alternative when the change must be tested in the real profile; it
+  lasts until the next restart.
 
 For iterating on code, prefer the in-browser **dev-reload** hotkey
 (`Ctrl+Shift+R` on Mac) over rebuilding: it calls `runtime.reload()` and
