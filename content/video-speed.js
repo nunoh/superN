@@ -50,6 +50,27 @@
     if (video) try { video.requestFullscreen(); } catch (_) {}
   }
 
+  // Sites with a real player bind F themselves, and they fullscreen their
+  // player container, then size the video inside it. Fullscreening the bare
+  // <video> instead hands the element to the browser at full screen size,
+  // where the site's own styling makes it cover rather than contain — the
+  // picture ends up zoomed and cropped. On these hosts, leave F to the page.
+  const NATIVE_FULLSCREEN_HOSTS = [
+    "youtube.com",
+    "youtube-nocookie.com",
+    "twitch.tv",
+    "vimeo.com",
+    "netflix.com",
+  ];
+
+  function hostMatches(entryDomain, host) {
+    return host === entryDomain || host.endsWith("." + entryDomain);
+  }
+
+  const SITE_OWNS_FULLSCREEN = NATIVE_FULLSCREEN_HOSTS.some((d) =>
+    hostMatches(d, location.hostname)
+  );
+
   function seek(videos, delta) {
     for (const video of videos) {
       try {
@@ -267,7 +288,7 @@
       } else if (k === "v") {
         e.preventDefault();
         togglePinned();
-      } else if (k === "f") {
+      } else if (k === "f" && !SITE_OWNS_FULLSCREEN) {
         e.preventDefault();
         fullscreen(video);
         reveal(REVEAL_ON_INTERACTION_MS);
