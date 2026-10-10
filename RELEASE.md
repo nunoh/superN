@@ -25,7 +25,7 @@ The listing's permission justification should say:
 
 1. Set the same release version in `manifest.json` and `package.json`; update
    `CHANGELOG.md`.
-2. Run `npm run build`, `npm run package:chrome`, and `npm run cloc`.
+2. Run `npm run build` and `npm run package:chrome`.
 3. Run `npx web-ext lint` with the same ignore list as `npm run build`.
 4. Load `manifest.json` temporarily in Firefox. Load `dist/chrome/` unpacked
    in Chrome, then test the packaged `dist/supern-chrome.zip` in the Store's

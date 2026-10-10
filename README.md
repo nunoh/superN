@@ -118,7 +118,6 @@ There is no compile step and no bundler — the source files ship as-is.
 | `npm run sign:unlisted`  | Sign an unlisted AMO build.                               |
 | `npm run install-local`  | Build, then open the newest `.xpi` in Firefox.            |
 | `npm run verify`         | Build both packages and run the Firefox manifest lint.     |
-| `npm run cloc`           | Line count of the shipping source.                        |
 
 [`web-ext`](https://github.com/mozilla/web-ext) is the only dev dependency, and it only packages and signs. There are zero runtime dependencies.
 
