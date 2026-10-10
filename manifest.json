@@ -57,7 +57,7 @@
       "all_frames": true
     },
     {
-      "matches": ["*://*.rtve.es/*"],
+      "matches": ["*://*.rtve.es/*", "*://chatgpt.com/*", "*://*.chatgpt.com/*"],
       "js": ["content/keyboard-reclaim.js"],
       "run_at": "document_start",
       "all_frames": true
