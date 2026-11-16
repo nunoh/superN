@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Time-block lets through deep links to a single post or video (e.g. an x.com status, a YouTube watch page) even when typed, pasted or opened from a bookmark, so reading-list links still open while a site is blocked. Bypassed pages are now locked to the item they opened: navigating within the site (including x.com's in-app navigation) to a feed or another post reloads into the block screen.
+
+- New-tab URLs now display inside the new-tab page by default, keeping the address bar empty for searches. Settings can switch back to opening the URL directly; Zero pairing also works in the embedded view.
+
+- Added `npm run dev:default` to temporarily load local changes in the actual `default-release` Firefox profile and reload on save after one-time debugger setup.
+
+- Custom new tab URL: set an HTTP or HTTPS address in settings. New tabs open it directly; leaving it blank shows a minimal page with a settings link.
+
+## 2026-10-20 (v0.12.1)
+
+- Gmail reader supports the verified Unread first layout by adding both sections.
+- Optional Zero connection: send Gmail Inbox totals and Firefox tab counts to your own LAN dashboard. Excludes private tabs and the first three pinned tabs; never sends message content or tab URLs.
+- SuperN settings show connection status and provide a disconnect control. Firefox count-sharing consent is optional.
+
 ## 2026-09-01 (v0.11.0)
 
 ### ✨ Features

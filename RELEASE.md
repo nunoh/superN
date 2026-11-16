@@ -9,7 +9,8 @@ x.com doomscroll meter. Do not describe it as only a time blocker.
 
 Link the public store listing to the repository's `PRIVACY.md`. Complete the
 Chrome Web Store data-use form truthfully: SuperN does not transmit user data
-to the developer or any third party. Pending snooze URLs/titles, settings, and
+to the developer or analytics services. Its optional Zero connection sends
+counts and timestamps to the user-owned LAN dashboard after explicit consent. Pending snooze URLs/titles, settings, and
 usage totals are stored locally only. Private-window activity is not persisted.
 
 The listing's permission justification should say:
@@ -41,6 +42,9 @@ The listing's permission justification should say:
   both totals remain after a reload. Check the 4am reset boundary if practical.
 - Follow an external link to a blocked site (one navigation bypasses); reload
   it and it blocks again. Internal links must not bypass.
+- With x.com blocked, paste an x.com status URL into the address bar: it opens.
+  Clicking a reply, Home, or Back to the feed must return to the block screen;
+  opening the post's photo must not. Typing `x.com` still blocks.
 - Snooze, cancel, and wake a normal tab. Repeat around a browser restart. Try
   snoozing in a private window and verify no item is saved.
 - Hover a video: `S`, `D`, `Z`, `X`, `R`, `V`, and `F` affect only that video.
@@ -49,3 +53,5 @@ The listing's permission justification should say:
   invalid favicon responses leave the original icon intact.
 - Trigger the x.com meter; verify focus returns after dismissal and no meter
   appears on a time-block screen.
+
+- Zero: grant optional count sharing, connect from Zero, reload Gmail Inbox, verify its total and tab count, then disconnect. Unknown/closed/offline views must not become zero.

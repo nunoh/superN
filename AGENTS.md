@@ -40,6 +40,12 @@ There is no compile step, linter, or test suite — source files ship as-is.
   between runs. `about:debugging` -> "Load Temporary Add-on" -> `manifest.json`
   is the alternative when the change must be tested in the real profile; it
   lasts until the next restart.
+- `npm run dev:default` — temporarily load the working tree in the actual
+  `default-release` Firefox profile and reload on save. Requires one-time
+  debugger setup (see README or `npm run dev:default -- --help`) and launching
+  Firefox through this script after quitting a normally started instance.
+  Ctrl-C leaves Firefox open; a normal Firefox restart restores the signed
+  extension. Does not use web-ext's development-profile preference setup.
 
 For iterating on code, prefer the in-browser **dev-reload** hotkey
 (`Ctrl+Shift+R` on Mac) over rebuilding: it calls `runtime.reload()` and

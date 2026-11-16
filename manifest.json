@@ -1,14 +1,15 @@
 {
   "manifest_version": 3,
   "name": "SuperN",
-  "version": "0.11.0",
+  "version": "0.12.1",
   "description": "Local-first browser productivity tools: time blocks, tab actions, video controls, and more.",
   "browser_specific_settings": {
     "gecko": {
       "id": "supern@nh.local",
       "strict_min_version": "121.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": ["none"],
+        "optional": ["browsingActivity", "websiteContent"]
       }
     }
   },
@@ -74,11 +75,26 @@
       "js": ["content/favicon.js"],
       "run_at": "document_start",
       "all_frames": false
+    },
+    {
+      "matches": ["https://mail.google.com/mail/*"],
+      "js": ["content/zero-gmail.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": ["https://zero.nh/*"],
+      "js": ["content/zero-bridge.js"],
+      "run_at": "document_idle",
+      "all_frames": true
     }
   ],
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab/newtab.html"
   },
   "commands": {
     "open-options": {

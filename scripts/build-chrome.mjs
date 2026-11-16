@@ -9,6 +9,7 @@ const files = [
   "browser-api.js",
   "content",
   "options",
+  "newtab",
 ];
 
 rmSync(outDir, { recursive: true, force: true });

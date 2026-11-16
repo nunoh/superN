@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>New tab</title>
+    <link rel="stylesheet" href="newtab.css" />
+  </head>
+  <body>
+    <p id="fallback" hidden>
+      <a href="../options/options.html#new-tab">Set your new tab URL</a>
+    </p>
+    <details id="page-tools" hidden>
+      <summary aria-label="New tab options">Options</summary>
+      <nav>
+        <a id="open-directly" target="_blank" rel="noopener noreferrer">Open directly</a>
+        <a href="../options/options.html#new-tab" target="_blank" rel="noopener">Settings</a>
+      </nav>
+    </details>
+    <script src="../browser-api.js"></script>
+    <script src="newtab.js"></script>
+  </body>
+</html>

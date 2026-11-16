@@ -76,6 +76,23 @@
     return reasons;
   }
 
+  function deepLinkAnchor(url) {
+    let u;
+    try {
+      u = new URL(url);
+    } catch (_) {
+      return null;
+    }
+    const v = u.searchParams.get("v");
+    if (u.pathname === "/watch" && v) return "v=" + v;
+    const segs = u.pathname.split("/").filter(Boolean);
+    return segs.slice(1).find((s) => s.length >= 6 && /\d/.test(s)) || null;
+  }
+
+  function trimPath(path) {
+    return path.replace(/\/+$/, "").toLowerCase();
+  }
+
   function reasonText(reasons) {
     if (reasons.includes("window")) return "outside allowed hours.";
     if (reasons.includes("budget")) return "daily time used.";
@@ -118,6 +135,19 @@
   }
 
   const bypassed = sessionBypass || linkBypass;
+
+  // A link bypass covers only the page it opened. Single-page apps (x.com)
+  // navigate via pushState without re-running this script, so the tick checks
+  // that the URL still points at the same item (or path) and otherwise reloads
+  // into the block screen, since a reload never bypasses.
+  const scopeAnchor = deepLinkAnchor(location.href);
+  const scopePath = trimPath(location.pathname);
+  let leavingScope = false;
+  function inLinkScope() {
+    if (scopeAnchor) return deepLinkAnchor(location.href) === scopeAnchor;
+    const path = trimPath(location.pathname);
+    return path === scopePath || path.startsWith(scopePath + "/");
+  }
 
   const budgetSec = entry.minutes ? entry.minutes * 60 : null;
   let usedSec = state.usage[entry.domain] || 0;
@@ -260,12 +290,15 @@
       overlay.textContent = formatRemaining(budgetSec - usedSec);
     }
 
-    if (!bypassed) {
+    if (!sessionBypass && !leavingScope) {
       const reasons = blockReasons(entry, usedSec);
-      if (reasons.length) {
+      if (reasons.length && !linkBypass) {
         persist(true)
           .then(() => persist(true))
           .finally(() => showBlocked(reasons));
+      } else if (reasons.length && !inLinkScope()) {
+        leavingScope = true;
+        persist(true).finally(() => location.reload());
       }
     }
   }, 1000);

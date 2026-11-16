@@ -20,10 +20,10 @@ You should do this for **every** extension you install. Most are closed-source a
 You don't have to take the AI's word for it either. The privacy claims below are three greps:
 
 ```sh
-# Every network call in the extension. Exactly one hit: the favicon fetch.
+# Network calls: favicon conversion and opt-in counts to your Zero dashboard.
 grep -rnE "fetch\(|XMLHttpRequest|sendBeacon|WebSocket" background.js background-chrome.js browser-api.js content/ options/
 
-# That one fetch, in full: credentials omitted, no referrer, converted locally.
+# Favicon fetch: credentials omitted, no referrer, converted locally.
 grep -nA6 "fetch(" content/favicon.js
 
 # No remotely hosted code, ever.
@@ -33,7 +33,7 @@ grep -rnE "import\(|\.src\s*=" background.js background-chrome.js browser-api.js
 ## Features
 
 ### ⏳ Time-block
-Per-site daily minute budget, reset at 4am local time, and/or a daily block window. Hard mode swaps the page for a block screen; soft mode gives you a 10-second-delayed "open anyway" button. Pause any rule without deleting it. Inbound links from other sites bypass the block for that one tab, so a link someone sends you still opens. Windows can be scoped to weekdays only. Replaces [LeechBlock NG](https://addons.mozilla.org/en-US/firefox/addon/leechblock-ng/).
+Per-site daily minute budget, reset at 4am local time, and/or a daily block window. Hard mode swaps the page for a block screen; soft mode gives you a 10-second-delayed "open anyway" button. Pause any rule without deleting it. Inbound links from other sites bypass the block for that one page, so a link someone sends you still opens. Deep links to a single post or video (an x.com status, a YouTube video) bypass even when typed, pasted or bookmarked, so your reading list keeps working. Navigating from a bypassed page to a feed or another post blocks again. Windows can be scoped to weekdays only. Replaces [LeechBlock NG](https://addons.mozilla.org/en-US/firefox/addon/leechblock-ng/).
 
 ### 🌀 Doomscroll-o-meter
 A tiny meter on x.com that charges as you scroll fast and decays while you actually read. At 100% the page locks for 8 seconds behind a "take a breath" overlay. No equivalent add-on — this one exists because the time-block budget alone didn't fix the behaviour.
@@ -61,6 +61,26 @@ Per-host allowlist. Matching favicons are desaturated to grayscale on a canvas a
 
 ### ⌨️ Keyboard reclaim
 Some sites capture `Cmd`/`Ctrl`+digit and steal your tab-switching shortcuts. This blocks the hijack in the capture phase for hosts listed in `manifest.json` (currently rtve.es).
+
+### Zero live counts
+
+Open SuperN settings and click **Allow count sharing** (Firefox 140+), then open
+https://zero.nh and click **Connect SuperN**. Reload the Gmail Inbox after
+installing an updated extension so its count reader is loaded. Reporting is
+optional and stays off until pairing. On older Firefox and Chromium, the
+explicit Connect action provides consent.
+
+Gmail counts read and unread **conversations** from Inbox pagination, never
+sidebar/title unread badges. Keep the first Gmail tab in Inbox view. Unknown,
+approximate, category, and unreadable totals are reported unavailable rather
+than guessed as zero. The page layout may need maintenance when Gmail changes.
+
+Normal-window tabs are counted across windows; the first three pinned tabs
+are excluded globally, with additional pinned tabs counted. Private tabs are
+excluded. Refreshes follow tab/page changes and a one-minute alarm. Zero marks
+data stale after two minutes without a report.
+
+Test the reader and tab-count rules with `node --test scripts/zero.test.mjs`.
 
 ## Keybindings
 
@@ -110,6 +130,7 @@ There is no compile step and no bundler — the source files ship as-is.
 | Command                  | What it does                                              |
 |--------------------------|-----------------------------------------------------------|
 | `npm run dev`            | Run the extension in a scratch Firefox, reloading on save. |
+| `npm run dev:default`    | Load local changes in your actual `default-release` Firefox profile and reload on save; see setup below. |
 | `npm run release`        | Bump, changelog, commit, tag, sign, install, push — the whole release. |
 | `npm run build`          | Package an unsigned `.xpi` into `web-ext-artifacts/`.     |
 | `npm run build:chrome`   | Build the unpacked Chromium extension into `dist/chrome/`. |
@@ -121,13 +142,32 @@ There is no compile step and no bundler — the source files ship as-is.
 
 [`web-ext`](https://github.com/mozilla/web-ext) is the only dev dependency, and it only packages and signs. There are zero runtime dependencies.
 
+### Test in your everyday Firefox profile
+
+`npm run dev:default` uses the actual `default-release` profile. Once, in that
+profile's `about:config`, set `devtools.debugger.remote-enabled` and
+`devtools.chrome.enabled` to `true`, and keep `devtools.debugger.force-local`
+set to `true`. Quit Firefox completely, then run `npm run dev:default` and
+accept the debugging connection prompt. The debugger grants local tools access
+to the browser while this Firefox session is running.
+
+The script temporarily loads this working tree and reloads it on save, including
+manifest changes. You do not need to select `manifest.json` manually. If Firefox
+was started normally, quit it before running the script. Later runs can attach
+to a Firefox session already launched by this script. Ctrl-C stops watching and
+leaves Firefox open; restarting Firefox normally restores the installed signed
+version. Refresh existing website tabs to pick up changed content scripts.
+
+Use `npm run dev:default -- --help` to show setup instructions, `--once` to load
+without watching, or `--attach` to connect without launching Firefox.
+
 ## Privacy
 
-- **No data collection.** Everything stays in `browser.storage.local`: your rules, daily usage totals, favicon allowlist, and pending snoozes.
-- **No analytics, no tracking, no phone-home.** There is no account and no server.
+- **Local by default.** Rules, usage totals, favicon settings, and snoozes stay in browser storage.
+- **Optional Zero reporting.** Connecting at `https://zero.nh` sends only Gmail Inbox conversation counts, normal-window tab counts, availability, and timestamps to your own Bee server. No message contents, account addresses, URLs, or titles are transmitted. Disconnect in SuperN settings.
+- **No analytics or tracking services.** No data is sent to the developer.
 - **No remotely hosted code.** Nothing is fetched and executed.
-- **The only network request** is the monochrome favicon feature fetching the page's own public favicon — with credentials omitted and no referrer — then converting it locally. Nothing is sent anywhere.
-- **Private windows are excluded.** Time-block activity and snoozes are never recorded from a private window.
+- **Private windows are excluded.** Their tabs are not counted or reported.
 
 Full statement in [`PRIVACY.md`](PRIVACY.md).
 
@@ -140,3 +180,5 @@ See [`AGENTS.md`](AGENTS.md) for the full layout and storage key shapes, [`SPEC.
 ## License
 
 MIT
+
+Unread first: the reader adds the Unread and Everything else section totals, treating only explicit empty-section messages as zero.

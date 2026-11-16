@@ -13,6 +13,41 @@
         SuperN
       </h1>
 
+      <section id="new-tab">
+        <h2>
+          <svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M12 8v8M8 12h8" />
+          </svg>
+          New tab
+        </h2>
+        <p id="new-tab-help" class="hint">
+          show this URL whenever you create a new tab. use a full http:// or
+          https:// address. leave blank for a minimal page with a settings link.
+        </p>
+        <form id="new-tab-form">
+          <input
+            id="new-tab-url"
+            type="url"
+            placeholder="https://example.com/"
+            aria-label="New tab URL"
+            aria-describedby="new-tab-help"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="submit">save</button>
+          <label class="new-tab-mode">
+            <input id="new-tab-embed" type="checkbox" checked />
+            keep the address bar empty and ready to search
+          </label>
+        </form>
+        <p class="hint small">
+          embedded pages must allow embedding (Zero does). uncheck this for
+          sites that refuse to load. the new-tab Options menu can open a page directly.
+        </p>
+        <p id="new-tab-status" class="hint small" role="status"></p>
+      </section>
+
       <section>
         <h2>
           <svg class="section-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -157,6 +192,14 @@
           />
           <button type="submit">add</button>
         </form>
+      </section>
+
+      <section>
+        <h2>Zero</h2>
+        <p class="hint">Share Gmail Inbox totals and your normal-window tab count with your own Zero dashboard. The first three pinned tabs are excluded. No URLs, titles, message contents, or private tabs are sent.</p>
+        <p><button id="zero-consent" type="button">Allow count sharing</button></p>
+        <p><a href="https://zero.nh" target="_blank" rel="noreferrer">Open Zero to connect</a> · <button id="zero-disconnect" type="button">Disconnect</button></p>
+        <p id="zero-status" class="hint" role="status">Not connected.</p>
       </section>
 
       <section class="shortcuts">

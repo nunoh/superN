@@ -12,6 +12,64 @@ const SNOOZED_KEY = "snoozed";
 const SNOOZE_ALARM_PREFIX = "snooze-";
 const TIME_BLOCK_RESET_HOUR = 4;
 
+// New tab URL. The bundled new-tab page reads this directly on each opening.
+const NEW_TAB_URL_KEY = "newTabUrl";
+const newTabForm = document.querySelector("#new-tab-form");
+const newTabInput = document.querySelector("#new-tab-url");
+const newTabEmbed = document.querySelector("#new-tab-embed");
+const newTabStatus = document.querySelector("#new-tab-status");
+
+async function loadNewTab() {
+  try {
+    const { [NEW_TAB_URL_KEY]: url = "", newTabMode } = await browser.storage.local.get([
+      NEW_TAB_URL_KEY, "newTabMode",
+    ]);
+    if (document.activeElement !== newTabInput) {
+      newTabInput.value = typeof url === "string" ? url : "";
+    }
+    if (document.activeElement !== newTabEmbed) {
+      newTabEmbed.checked = newTabMode !== "redirect";
+    }
+  } catch (_) {}
+}
+
+newTabInput.addEventListener("input", () => {
+  newTabInput.setCustomValidity("");
+  newTabStatus.textContent = "";
+});
+newTabEmbed.addEventListener("change", () => { newTabStatus.textContent = ""; });
+
+newTabForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  let url = newTabInput.value.trim();
+  if (url) {
+    try {
+      const parsed = new URL(url);
+      if (!["http:", "https:"].includes(parsed.protocol)) throw new Error();
+      url = parsed.href;
+    } catch (_) {
+      newTabInput.setCustomValidity("Enter a full http:// or https:// URL.");
+      newTabInput.reportValidity();
+      return;
+    }
+  }
+  try {
+    await browser.storage.local.set({
+      [NEW_TAB_URL_KEY]: url,
+      newTabMode: newTabEmbed.checked ? "embed" : "redirect",
+    });
+    newTabInput.value = url;
+    newTabStatus.textContent = "Saved. Applies to new tabs opened from now on.";
+  } catch (_) {
+    newTabStatus.textContent = "Could not save. Please try again.";
+  }
+});
+
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && (changes[NEW_TAB_URL_KEY] || changes.newTabMode)) loadNewTab();
+});
+loadNewTab();
+
 function usageDayStr() {
   const d = new Date();
   d.setHours(d.getHours() - TIME_BLOCK_RESET_HOUR);
@@ -511,3 +569,31 @@ loadShortcuts();
 loadVideoSpeed();
 loadMono();
 loadBuildStamp();
+
+async function loadZero() {
+  const { zeroConnection, zeroStatus } = await browser.storage.local.get(['zeroConnection', 'zeroStatus']);
+  const el = document.querySelector('#zero-status');
+  if (!zeroConnection) { el.textContent = 'Not connected.'; return; }
+  if (!zeroStatus) { el.textContent = 'Connected; waiting for a reading.'; return; }
+  el.textContent = zeroStatus.ok
+    ? `Updated ${new Date(zeroStatus.updatedAt).toLocaleTimeString()} · ${zeroStatus.tabs} tabs · Gmail ${zeroStatus.inbox?.available ? zeroStatus.inbox.count + ' inbox conversations' : zeroStatus.inbox?.reason || 'unavailable'}`
+    : `Could not reach Zero: ${zeroStatus.error}. Will retry automatically.`;
+}
+document.querySelector('#zero-disconnect').addEventListener('click', async () => {
+  await browser.storage.local.remove(['zeroConnection', 'zeroStatus']);
+  await browser.alarms.clear('supern-zero-refresh');
+  loadZero();
+});
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && (changes.zeroConnection || changes.zeroStatus)) loadZero();
+});
+loadZero();
+
+document.querySelector('#zero-consent').addEventListener('click', async () => {
+  try {
+    const result = await browser.permissions.request({ data_collection: ['browsingActivity', 'websiteContent'] });
+    document.querySelector('#zero-status').textContent = result ? 'Allowed. Open Zero and click Connect SuperN.' : 'Count sharing was not allowed.';
+  } catch {
+    document.querySelector('#zero-status').textContent = 'Open Zero and click Connect SuperN to enable count sharing.';
+  }
+});

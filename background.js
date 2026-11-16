@@ -30,12 +30,29 @@ browser.action.onClicked.addListener(() => {
 // document.referrer is unreliable (Referrer-Policy: no-referrer strips it on
 // many sites and chat apps), so we use webNavigation transition types: tabs
 // that committed via "link" or "form_submit" get a bypass flag the content
-// script reads via message. Typed / bookmarked / reloaded navs do not.
+// script reads via message. Deep links to a single item (a post, a video) also
+// bypass when typed, pasted or bookmarked, but not when reached by a link from
+// the same site. Reloads never bypass.
 // ---------------------------------------------------------------------------
 
 const LINK_BYPASS_STORE_KEY = "__supern_link_bypass_tabs";
 const LINK_TRANSITIONS = new Set(["link", "form_submit"]);
 const lastCommittedHost = new Map();
+
+// Mirrors timer.js: the item ID a deep link points at, or null for feeds,
+// profiles and other browsable pages.
+function deepLinkAnchor(url) {
+  let u;
+  try {
+    u = new URL(url);
+  } catch (_) {
+    return null;
+  }
+  const v = u.searchParams.get("v");
+  if (u.pathname === "/watch" && v) return "v=" + v;
+  const segs = u.pathname.split("/").filter(Boolean);
+  return segs.slice(1).find((s) => s.length >= 6 && /\d/.test(s)) || null;
+}
 
 function sessionStore() {
   // Firefox 121+ and Chromium 123+ provide session storage. Keep navigation
@@ -102,11 +119,15 @@ if (browser.webNavigation && browser.webNavigation.onCommitted) {
     }
     const previousHost = lastCommittedHost.get(details.tabId);
     lastCommittedHost.set(details.tabId, host);
-    if (
-      previousHost &&
-      previousHost !== host &&
-      LINK_TRANSITIONS.has(details.transitionType)
-    ) {
+    const transition = details.transitionType;
+    const isLink = LINK_TRANSITIONS.has(transition);
+    const fromElsewhere = previousHost !== host;
+    const bypass =
+      transition !== "reload" &&
+      (deepLinkAnchor(details.url)
+        ? !isLink || fromElsewhere
+        : isLink && Boolean(previousHost) && fromElsewhere);
+    if (bypass) {
       setLinkBypass(details.tabId, details.url).catch(() => {});
     } else {
       clearLinkBypass(details.tabId).catch(() => {});
@@ -120,6 +141,7 @@ browser.tabs.onRemoved.addListener((tabId) => {
 });
 
 browser.runtime.onMessage.addListener(async (msg, sender) => {
+  if (msg?.type?.startsWith("supern-zero-")) return zeroMessage(msg, sender);
   if (msg && msg.type === "supern-bypass-check") {
     const tabId = sender.tab && sender.tab.id;
     if (tabId == null || !sender.tab.url) return false;
@@ -485,5 +507,95 @@ browser.commands.onCommand.addListener(async (name) => {
         (host === e.domain || host.endsWith("." + e.domain))
     );
     if (matches) browser.tabs.reload(tab.id);
+  }
+})();
+
+// ---------------------------------------------------------------------------
+// Zero: opt-in count reporting to the user's LAN dashboard. Count/timestamp
+// only; no tab URLs, message contents, account identities, or private tabs.
+// ---------------------------------------------------------------------------
+const ZERO_ORIGIN = 'https://zero.nh';
+const ZERO_ALARM = 'supern-zero-refresh';
+let zeroTimer;
+let zeroQueue = Promise.resolve();
+
+function zeroSchedule() {
+  clearTimeout(zeroTimer);
+  zeroTimer = setTimeout(() => zeroSync().catch(() => {}), 800);
+}
+
+async function zeroMessage(msg, sender) {
+  if (sender.tab?.incognito || IS_PRIVATE_CONTEXT) return { ok: false };
+  if (msg.type === 'supern-zero-pair') {
+    if (!sender.tab || new URL(sender.url || sender.tab.url).origin !== ZERO_ORIGIN ||
+        !/^[a-f0-9]{64}$/.test(msg.token)) return { ok: false };
+    const permissions = await browser.permissions.getAll();
+    if (permissions.data_collection && !['browsingActivity', 'websiteContent'].every(p => permissions.data_collection.includes(p))) {
+      await browser.runtime.openOptionsPage();
+      return { ok: false, needsConsent: true };
+    }
+    await browser.storage.local.set({ zeroConnection: { token: msg.token } });
+    await browser.alarms.create(ZERO_ALARM, { periodInMinutes: 1 });
+    return { ok: await zeroSync() };
+  }
+  if (msg.type === 'supern-zero-gmail-changed') {
+    if (!sender.tab || new URL(sender.url || sender.tab.url).origin !== 'https://mail.google.com') return;
+    zeroSchedule();
+  }
+}
+
+function zeroTabCount(tabs) {
+  const normal = tabs.filter(tab => !tab.incognito);
+  return normal.length - Math.min(3, normal.filter(tab => tab.pinned).length);
+}
+
+function zeroSync() {
+  // A suspended/restarted background can reconstruct everything from storage.
+  zeroQueue = zeroQueue.catch(() => {}).then(async () => {
+    if (IS_PRIVATE_CONTEXT) return false;
+    const { zeroConnection } = await browser.storage.local.get('zeroConnection');
+    if (!zeroConnection?.token) return false;
+    const permissions = await browser.permissions.getAll();
+    if (permissions.data_collection && !['browsingActivity', 'websiteContent'].every(p => permissions.data_collection.includes(p))) return false;
+    const tabs = (await browser.tabs.query({ windowType: 'normal' })).filter(tab => !tab.incognito);
+    // Global allowance of three pinned tabs; extra pinned tabs count too.
+    const report = { tabs: { available: true, count: zeroTabCount(tabs), observedAt: Date.now() } };
+    const gmail = tabs.filter(tab => /^https:\/\/mail\.google\.com\/mail\//.test(tab.url || ''))
+      .sort((a, b) => a.windowId - b.windowId || a.index - b.index)[0];
+    if (gmail) {
+      try { report.inbox = await browser.tabs.sendMessage(gmail.id, { type: 'supern-zero-read-inbox' }); }
+      catch { report.inbox = { available: false, reason: 'loading', observedAt: Date.now() }; }
+    } else report.inbox = { available: false, reason: 'closed', observedAt: Date.now() };
+    try {
+      const response = await fetch(ZERO_ORIGIN + '/api/sources', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + zeroConnection.token },
+        body: JSON.stringify(report), credentials: 'omit', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(8000),
+      });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      await browser.storage.local.set({ zeroStatus: { ok: true, updatedAt: Date.now(), inbox: report.inbox, tabs: report.tabs.count } });
+      return true;
+    } catch (error) {
+      await browser.storage.local.set({ zeroStatus: { ok: false, updatedAt: Date.now(), error: String(error.message).slice(0, 120) } });
+      return false;
+    }
+  });
+  return zeroQueue;
+}
+
+browser.tabs.onCreated.addListener(zeroSchedule);
+browser.tabs.onRemoved.addListener(zeroSchedule);
+browser.tabs.onMoved.addListener(zeroSchedule);
+browser.tabs.onAttached.addListener(zeroSchedule);
+browser.tabs.onDetached.addListener(zeroSchedule);
+browser.tabs.onUpdated.addListener((_id, change) => {
+  if ('pinned' in change || change.status === 'complete' || 'url' in change) zeroSchedule();
+});
+browser.alarms.onAlarm.addListener(alarm => { if (alarm.name === ZERO_ALARM) zeroSync().catch(() => {}); });
+(async () => {
+  if (IS_PRIVATE_CONTEXT) return;
+  const { zeroConnection } = await browser.storage.local.get('zeroConnection');
+  if (zeroConnection?.token) {
+    await browser.alarms.create(ZERO_ALARM, { periodInMinutes: 1 });
+    zeroSync().catch(() => {});
   }
 })();

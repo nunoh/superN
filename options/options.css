@@ -324,3 +324,16 @@ form {
 form input[type="text"] {
   flex: 1 1 12rem;
 }
+
+#new-tab-url {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.new-tab-mode {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
