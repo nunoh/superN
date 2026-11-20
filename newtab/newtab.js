@@ -18,6 +18,7 @@
         frame.setAttribute("sandbox", [
           "allow-scripts", "allow-same-origin", "allow-forms", "allow-modals",
           "allow-popups", "allow-popups-to-escape-sandbox", "allow-downloads",
+          "allow-top-navigation-by-user-activation",
           "allow-storage-access-by-user-activation",
         ].join(" "));
         frame.src = url.href;

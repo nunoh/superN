@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Links in the embedded new-tab page open in the current tab when clicked. The iframe sandbox now allows top-level navigation on a user click, so apps that refuse framing (`frame-ancestors 'none'`) load instead of failing inside the frame.
+
 ## 2026-11-20 (v0.13.0)
 
 - Time-block lets through deep links to a single post or video (e.g. an x.com status, a YouTube watch page) even when typed, pasted or opened from a bookmark, so reading-list links still open while a site is blocked. Bypassed pages are now locked to the item they opened: navigating within the site (including x.com's in-app navigation) to a feed or another post reloads into the block screen.
