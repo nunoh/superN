@@ -60,16 +60,6 @@ function setVersion(path, version) {
   writeFileSync(path, next);
 }
 
-// The lockfile carries the version twice — at the root and under packages[""].
-// npm writes it as 2-space JSON with a trailing newline, so a round-trip here
-// is byte-identical and safer than replacing one of two identical strings.
-function setLockVersion(version) {
-  const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
-  lock.version = version;
-  if (lock.packages && lock.packages[""]) lock.packages[""].version = version;
-  writeFileSync("package-lock.json", JSON.stringify(lock, null, 2) + "\n");
-}
-
 loadDotEnv();
 
 const domain = process.env.INFISICAL_DOMAIN;
@@ -97,14 +87,13 @@ console.log(`\n→ ${current} → ${version} (${CHANNEL})\n`);
 
 setVersion("package.json", version);
 setVersion("manifest.json", version);
-setLockVersion(version);
 writeFileSync(
   "CHANGELOG.md",
   changelog.replace("## Unreleased", `## ${today} (v${version})`)
 );
 
 run("npm", ["run", "verify"]);
-run("git", ["add", "package.json", "package-lock.json", "manifest.json", "CHANGELOG.md"]);
+run("git", ["add", "package.json", "manifest.json", "CHANGELOG.md"]);
 run("git", ["commit", "-m", `chore(release): bump version to ${version}`]);
 run("git", ["tag", `v${version}`]);
 
