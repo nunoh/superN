@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2026-11-20 (v0.13.1)
 
 - Links in the embedded new-tab page open in the current tab when clicked. The iframe sandbox now allows top-level navigation on a user click, so apps that refuse framing (`frame-ancestors 'none'`) load instead of failing inside the frame.
 
